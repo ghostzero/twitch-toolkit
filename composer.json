@@ -1,0 +1,21 @@
+{
+    "name": "ghostzero/lpthoot",
+    "description": "A simple library to poll the streamers status instead of using webhooks.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "René Preuß",
+            "email": "rene@preuss.io"
+        }
+    ],
+    "require": {
+        "laravel/framework": "5.8.*",
+        "romanzipp/laravel-twitch": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "GhostZero\\LPTHOOT\\": "app/"
+        }
+    }
+}
