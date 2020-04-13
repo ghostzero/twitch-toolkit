@@ -15,7 +15,7 @@ class CreateLpthootChannelsTable extends Migration
     {
         Schema::create('lpthoot_channels', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->boolean('is_online')->primary();
+            $table->boolean('is_online')->default(false);
             $table->timestamp('changed_at')->nullable();
             $table->timestamps();
         });

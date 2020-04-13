@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52cf3c849914a1b46d58795b986119f4",
+    "content-hash": "e6c7cc7beea73b8f783a9abf37a04e6d",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -1353,28 +1353,22 @@
         },
         {
             "name": "romanzipp/laravel-twitch",
-            "version": "2.2.2",
+            "version": "1.0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/romanzipp/Laravel-Twitch.git",
-                "reference": "e8a037647d1e3e43dd7c84b3cbb7abcf805cfa00"
+                "reference": "ef1c8697ba08f4d57a0e52c8736b366a1d9c1041"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/romanzipp/Laravel-Twitch/zipball/e8a037647d1e3e43dd7c84b3cbb7abcf805cfa00",
-                "reference": "e8a037647d1e3e43dd7c84b3cbb7abcf805cfa00",
+                "url": "https://api.github.com/repos/romanzipp/Laravel-Twitch/zipball/ef1c8697ba08f4d57a0e52c8736b366a1d9c1041",
+                "reference": "ef1c8697ba08f4d57a0e52c8736b366a1d9c1041",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
-                "guzzlehttp/guzzle": "^6.3",
-                "illuminate/console": "^5.5|^6.0|^7.0",
-                "illuminate/support": "^5.5|^6.0|^7.0",
-                "php": ">=7.2"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^3.8",
-                "phpunit/phpunit": "^8.0"
+                "guzzlehttp/guzzle": "^6.2@dev",
+                "laravel/framework": "^5.3",
+                "php": ">=7.0"
             },
             "type": "library",
             "extra": {
@@ -1404,7 +1398,7 @@
                 }
             ],
             "description": "Twitch PHP Wrapper for Laravel",
-            "time": "2020-04-12T18:48:50+00:00"
+            "time": "2019-02-05T01:24:07+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
