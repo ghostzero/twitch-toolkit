@@ -16,8 +16,14 @@ class StreamUp
      */
     public $channel;
 
-    public function __construct(Channel $channel)
+    /**
+     * @var array
+     */
+    public $metadata;
+
+    public function __construct(Channel $channel, array $metadata)
     {
         $this->channel = $channel;
+        $this->metadata = $metadata;
     }
 }

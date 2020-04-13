@@ -54,10 +54,10 @@ class PollStreamStatusJob implements ShouldQueue
         $channelStates = $this->getChannelStates($this->channels, $twitch);
 
         foreach ($this->channels as $channel) {
-            $isOnline = $channelStates->where('id', '==', $channel->id)->count() > 0;
+            $state = $channelStates->where('id', '==', $channel->id)->count() > 0;
 
-            if ($this->hasStateChanged($channel, $isOnline)) {
-                $this->announceState($channel, $isOnline);
+            if ($this->hasStateChanged($channel, $state)) {
+                $this->announceState($channel, $state);
             }
         }
     }
@@ -71,21 +71,24 @@ class PollStreamStatusJob implements ShouldQueue
         return new Collection($result->data);
     }
 
-    private function hasStateChanged(Channel $channel, $newState)
+    private function hasStateChanged(Channel $channel, $state)
     {
-        return $channel->is_online !== $newState;
+        return $channel->is_online !== ($state !== null);
     }
 
-    private function announceState(Channel $channel, $isOnline)
+    private function announceState(Channel $channel, $state)
     {
-        if ($isOnline) {
-            broadcast(new StreamUp($channel));
+        if ($state !== null) {
+            dd($state);
+            broadcast(new StreamUp($channel, [
+
+            ]));
         } else {
             broadcast(new StreamDown($channel));
         }
 
         $channel->update([
-            'is_online' => $isOnline,
+            'is_online' => $state !== null,
             'changed_at' => now(),
         ]);
     }
