@@ -11,7 +11,7 @@
     ],
     "require": {
         "laravel/framework": "5.8.*",
-        "romanzipp/laravel-twitch": "^2.2"
+        "romanzipp/laravel-twitch": "^1.0"
     },
     "autoload": {
         "psr-4": {
