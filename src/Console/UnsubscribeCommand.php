@@ -2,27 +2,25 @@
 
 namespace GhostZero\LPTHOOT\Console;
 
-use GhostZero\LPTHOOT\Jobs\PollStreamStatusJob;
 use GhostZero\LPTHOOT\Models\Channel;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
 use romanzipp\Twitch\Twitch;
 
-class PollCommand extends Command
+class UnsubscribeCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lpthoot:poll';
+    protected $signature = 'lpthoot:unsubscribe {login}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Let\'s Poll The Hell Out Of Twitch';
+    protected $description = 'Unsubscribe a given channel from the poll hell.';
 
     /**
      * Execute the console command.
@@ -32,9 +30,12 @@ class PollCommand extends Command
      */
     public function handle(Twitch $twitch)
     {
-        Channel::query()->chunk(100, function (Collection $channels) use ($twitch) {
-            $this->info("Dispatch PollStreamStatusJob for {$channels->count()} channels...");
-            PollStreamStatusJob::dispatchNow($channels);
-        });
+        $response = $twitch->getUserByName($this->argument('login'));
+
+        if ($response->success()) {
+            $user = $response->shift();
+            Channel::unsubscribe($user->id);
+            $this->info("Unsubscribed from {$user->id} ($user->display_name)!");
+        }
     }
 }

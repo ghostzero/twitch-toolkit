@@ -24,7 +24,7 @@ class PollServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../migrations');
         $this->registerCommands();
     }
 
@@ -33,6 +33,9 @@ class PollServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Console\PollCommand::class,
+                Console\SubscribeCommand::class,
+                Console\UnsubscribeCommand::class,
+                Console\StatusCommand::class,
             ]);
         }
     }

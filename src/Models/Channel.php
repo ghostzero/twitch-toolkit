@@ -18,6 +18,8 @@ class Channel extends Model
 
     protected $dates = ['changed_at'];
 
+    protected $guarded = [];
+
     public static function subscribe(string $id): self
     {
         /** @var self $self */
