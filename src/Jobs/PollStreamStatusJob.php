@@ -11,6 +11,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use romanzipp\Twitch\Twitch;
 
@@ -41,11 +43,16 @@ class PollStreamStatusJob implements ShouldQueue
      */
     public function handle(Twitch $twitch)
     {
-        Redis::throttle('lpthoot:throttle')->allow(250)->every(60)->then(function () use ($twitch) {
+        Redis::throttle('lpthoot:throttle')->allow(500)->every(60)->then(function () use ($twitch) {
+            if ($accessToken = Cache::get('twitch:app.access_token')) {
+                $twitch->setToken($accessToken);
+            } else {
+                Log::emergency('Access token is empty! Please run "php artisan twitch:refresh-app-access-token".');
+            }
             $this->handleNow($twitch);
         }, function () {
             // Could not obtain lock...
-            $this->release(10);
+            $this->release(60);
         });
     }
 
@@ -86,7 +93,7 @@ class PollStreamStatusJob implements ShouldQueue
 
         // broadcast new state
         if ($channel->is_online) {
-            broadcast(new StreamUp($channel, (array) $state));
+            broadcast(new StreamUp($channel, (array)$state));
         } else {
             broadcast(new StreamDown($channel));
         }
