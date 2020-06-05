@@ -3,6 +3,7 @@
 namespace GhostZero\LPTHOOT\TopicParser;
 
 use Exception;
+use GhostZero\LPTHOOT\Enums\ActivityTopic;
 use GhostZero\LPTHOOT\TopicParser\Contracts\TopicParser;
 use GhostZero\LPTHOOT\TopicParser\Parsers;
 
@@ -12,10 +13,10 @@ class TwitchTopicParser
      * @var array
      */
     protected $parsers = [
-        'bits' => Parsers\BitsParser::class,
-        'subscriptions' => Parsers\SubscriptionsParser::class,
-        'follows' => Parsers\FollowsParser::class,
-        'streams' => Parsers\StreamsParser::class,
+        ActivityTopic::BITS => Parsers\BitsParser::class,
+        ActivityTopic::SUBSCRIPTIONS => Parsers\SubscriptionsParser::class,
+        ActivityTopic::FOLLOWS => Parsers\FollowsParser::class,
+        ActivityTopic::STREAMS => Parsers\StreamsParser::class,
     ];
 
     /**

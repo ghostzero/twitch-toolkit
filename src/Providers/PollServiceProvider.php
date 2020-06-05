@@ -36,6 +36,8 @@ class PollServiceProvider extends ServiceProvider
                 Console\SubscribeCommand::class,
                 Console\UnsubscribeCommand::class,
                 Console\StatusCommand::class,
+                Console\SubscribeWebhooksCommand::class,
+                Console\ClearWebhooksCommand::class,
             ]);
         }
     }

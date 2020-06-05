@@ -2,7 +2,6 @@
 
 namespace GhostZero\LPTHOOT\Http\Controllers;
 
-
 use Exception;
 use GhostZero\LPTHOOT\Events\WebhookWasCalled;
 use GhostZero\LPTHOOT\Models\Channel;
