@@ -20,23 +20,18 @@ class WebhookController extends Controller
     private const HUB_MODE_UNSUBSCRIBE = 'unsubscribe';
     private const HUB_MODE_DENIED = 'denied';
 
-    private const MYSQL_DUPLICATE_ENTRY = 1062;
-
     /**
      * @param Request $request
-     * @param string $channel
-     *
      * @return mixed
      * @throws Throwable
      */
-    public function challenge(Request $request, $channel)
+    public function challenge(Request $request)
     {
         $hubMode = $request->get('hub_mode');
 
         /** @var WebhookSubscription $subscription */
         $subscription = WebhookSubscription::query()
-            ->where(['activity' => $request->get('activity')])
-            ->where(['platform_id' => $channel])
+            ->where($request->only('activity', 'channel_id'))
             ->first();
 
         switch ($hubMode) {
@@ -53,35 +48,30 @@ class WebhookController extends Controller
 
     /**
      * @param Request $request
-     * @param string $channel
-     *
      * @return Response
-     * @throws Exception
+     * @throws ParseException
      */
-    public function store(Request $request, $channel): Response
+    public function store(Request $request): Response
     {
-        $platform_id = $channel;
+        $channelId = $request->get('channel_id');
         /** @var Channel|null $channel */
-        $channel = Channel::query()->whereKey($platform_id)->first();
+        $channel = Channel::query()->whereKey($channelId)->first();
 
         if ($channel === null) {
-            Log::info(sprintf(
-                'Got webhook from twitch for a non-existing channel %s.',
-                $platform_id
-            ));
+            Log::info(sprintf('Got webhook from twitch for a non-existing channel %s.', $channelId));
 
             return response('', 204, ['Content-Type' => 'text/plain']);
         }
 
-        $topic = $request->get('activity', $request->get('topic'));
+        $activity = $request->get('activity');
 
         Log::info(sprintf(
             'Got webhook from twitch for channel %s. Suggestion: Got %s activity.',
-            $channel->id,
-            $topic
+            $channel->getKey(),
+            $activity
         ));
 
-        $this->parseActivities($request, $channel, $topic);
+        $this->parseActivities($request, $channel, $activity);
 
         return response('', 204, ['Content-Type' => 'text/plain']);
     }
@@ -109,7 +99,7 @@ class WebhookController extends Controller
                 'Got %s %s data from twitch webhook for channel %s. Suggestion: Stream goes offline.',
                 $dispatched,
                 $topic,
-                $channel->id
+                $channel->getKey()
             ));
         }
 
@@ -145,7 +135,7 @@ class WebhookController extends Controller
 
         Log::info(sprintf(
             'Got webhook verify request for stored subscription %s. Sending challenge as response...',
-            $subscription->id
+            $subscription->getKey()
         ), ['subscription' => $subscription->toArray()]);
 
         return response($request->get('hub_challenge'), 200, ['Content-Type' => 'text/plain']);
@@ -165,7 +155,7 @@ class WebhookController extends Controller
 
             Log::critical(sprintf(
                 'Got webhook denied request for stored subscription %s. Stored subscription was deleted successfully.',
-                $subscription->id
+                $subscription->getKey()
             ), [
                 'subscription' => $subscription->toArray(),
                 'hub_reason' => $request->get('hub_reason'),
@@ -191,7 +181,7 @@ class WebhookController extends Controller
 
             Log::info(sprintf(
                 'Got webhook unsubscribe request for stored subscription %s.',
-                $subscription->id
+                $subscription->getKey()
             ), ['subscription' => $subscription->toArray()]);
         } else {
             Log::critical('Got webhook unsubscribe request without stored subscription.');

@@ -129,7 +129,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
         /** @var WebhookSubscription $subscription */
         $subscription = WebhookSubscription::query()
             ->firstOrCreate([
-                'platform_id' => $channel->getKey(),
+                'channel_id' => $channel->getKey(),
                 'activity' => $activity,
             ], $leaseInformation);
 
@@ -153,8 +153,8 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     private function getCallbackUrl(WebhookSubscription $subscription): string
     {
-        return route('api.twitch.channel.webhooks.callback', [
-            'channel' => $subscription->channel_id,
+        return route('lpthoot.webhooks.twitch.callback', [
+            'channel_id' => $subscription->channel_id,
             'activity' => $subscription->activity,
         ]);
     }
