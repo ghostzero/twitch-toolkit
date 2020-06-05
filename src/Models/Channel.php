@@ -24,6 +24,9 @@ class Channel extends Model
     public const TYPE_POLLING = 'polling';
     public const TYPE_WEBHOOK = 'webhook';
 
+    public const OPTION_CAPABILITIES = 'capabilities';
+    public const OPTION_BROADCASTER_TYPE = 'broadcaster_type';
+
     private const LPTHOOT_REQUIRES_FRESH_OAUTH_CREDENTIALS = 'lpthoot:requiresFreshOauthCredentials';
 
     protected $table = 'lpthoot_channels';
@@ -37,9 +40,9 @@ class Channel extends Model
 
     protected $guarded = [];
 
-    public static function subscribe(string $id, array $capabilities = [self::TYPE_POLLING]): self
+    public static function subscribe(string $id, array $options = []): self
     {
-        $self = self::updateSubscription($id, $capabilities);
+        $self = self::updateSubscription($id, $options);
 
         if (in_array(self::TYPE_WEBHOOK, $self->capabilities)) {
             dispatch(new SubscribeTwitchWebhooks($self));
@@ -53,16 +56,20 @@ class Channel extends Model
         return self::updateSubscription($id, [])->exists;
     }
 
-    private static function updateSubscription(string $id, array $capabilities): Channel
+    private static function updateSubscription(string $id, array $options): Channel
     {
+        $options = self::mergeDefaultOptions($options);
+
         /** @var self $self */
         $self = self::query()->firstOrCreate(['id' => $id], [
             'id' => $id,
-            'capabilities' => $capabilities,
+            'capabilities' => $options[self::OPTION_CAPABILITIES],
+            'broadcaster_type' => $options[self::OPTION_BROADCASTER_TYPE],
         ]);
 
         $self->forceFill([
-            'capabilities' => $capabilities,
+            'capabilities' => $options[self::OPTION_CAPABILITIES],
+            'broadcaster_type' => $options[self::OPTION_BROADCASTER_TYPE],
         ])->save();
 
         return $self;
@@ -78,6 +85,16 @@ class Channel extends Model
     {
         static::getEventDispatcher()
             ->listen(self::LPTHOOT_REQUIRES_FRESH_OAUTH_CREDENTIALS, $callback);
+    }
+
+    private static function mergeDefaultOptions(array $options)
+    {
+        return array_replace_recursive([
+            self::OPTION_CAPABILITIES => [
+                self::TYPE_POLLING,
+            ],
+            self::OPTION_BROADCASTER_TYPE => null,
+        ], $options);
     }
 
     /**
