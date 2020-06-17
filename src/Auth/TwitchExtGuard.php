@@ -10,6 +10,7 @@ use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -124,7 +125,7 @@ class TwitchExtGuard
                 return (new self(
                     Auth::createUserProvider($config['provider'])
                 ))->user($request);
-            }, $this->app['request']);
+            }, app('request'));
         });
     }
 
