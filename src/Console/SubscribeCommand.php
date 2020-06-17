@@ -13,14 +13,14 @@ class SubscribeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:subscribe {login}';
+    protected $signature = 'lpthoot:subscribe {login} {--capability=*}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Subscribe a given channel into the loop hell.';
+    protected $description = 'Subscribe a given channel into the loop hell or webhooks.';
 
     /**
      * Execute the console command.
@@ -34,8 +34,21 @@ class SubscribeCommand extends Command
 
         if ($response->success()) {
             $user = $response->shift();
-            Channel::subscribe($user->id);
+            Channel::subscribe($user->id, $this->getCapabilities());
             $this->info("Subscribed to {$user->id} ($user->display_name)!");
         }
+    }
+
+    private function getCapabilities(): array
+    {
+        if (!$option = $this->option('capability')) {
+            return [Channel::TYPE_POLLING];
+        }
+
+        if (!is_array($option)) {
+            return [$option];
+        }
+
+        return $option;
     }
 }

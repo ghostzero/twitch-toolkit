@@ -16,4 +16,13 @@ A simple library to poll the streamers status instead of using webhooks. Handle 
 
 ```php
 $schedule->command('lpthoot:poll')->everyFiveMinutes();
+$schedule->command('lpthoot:subscribe-webhooks')->weekly();
+```
+
+## Webhooks
+
+## Polling
+
+```php
+dispatch(new SubscribeTwitchWebhooks($channel));
 ```
