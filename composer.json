@@ -1,6 +1,6 @@
 {
     "name": "ghostzero/twitch-toolkit",
-    "description": "This package offers a toolkit to simplify certain processes",
+    "description": "This package offers a twitch toolkit to simplify certain processes using laravel framework.",
     "type": "library",
     "license": "MIT",
     "authors": [

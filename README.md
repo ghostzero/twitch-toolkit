@@ -1,6 +1,6 @@
-# Laravel Twitch Toolkit
+# GhostZero's Twitch Toolkit
 
-The main idea of this laravel package is to make it performant and easy to solve certain API problems with Twitch. Furthermore this package offers a toolkit to simplify certain processes:
+The main idea of this laravel package is to make it performant and easy to solve certain API problems with Twitch. Furthermore this package offers a toolkit to simplify certain processes (which have been provided by my [StreamKit](https://streamkit.gg/) platform):
 
 * Twitch Webhook/Polling Management
 * Twitch Webhooks as Laravel Events
@@ -8,13 +8,6 @@ The main idea of this laravel package is to make it performant and easy to solve
 * Twitch Extension Guard Middleware
 
 ## Installation
-
-```php
-/*
- * Package Service Providers...
- */
-\GhostZero\TwitchToolkit\Providers\PollServiceProvider::class,
-```
 
 ```php
 $schedule->command('twitch-toolkit:poll')->everyFiveMinutes();
