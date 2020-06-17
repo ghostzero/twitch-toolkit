@@ -13,7 +13,8 @@
         "laravel/framework": "5.8.*",
         "orchestra/testbench": "^3.7",
         "phpunit/phpunit": "^7.5",
-        "romanzipp/laravel-twitch": "^2.0"
+        "romanzipp/laravel-twitch": "^2.0",
+        "firebase/php-jwt": "^5.2"
     },
     "autoload": {
         "psr-4": {
