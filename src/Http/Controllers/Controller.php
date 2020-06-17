@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Http\Controllers;
+namespace GhostZero\TwitchToolkit\Http\Controllers;
 
 class Controller
 {

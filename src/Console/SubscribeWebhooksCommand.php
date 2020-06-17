@@ -1,9 +1,9 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\LPTHOOT\Jobs\SubscribeTwitchWebhooks;
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 
 class SubscribeWebhooksCommand extends Command
@@ -13,7 +13,7 @@ class SubscribeWebhooksCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:subscribe-webhooks';
+    protected $signature = 'twitch-toolkit:subscribe-webhooks';
 
     /**
      * The console command description.

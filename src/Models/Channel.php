@@ -1,12 +1,12 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Models;
+namespace GhostZero\TwitchToolkit\Models;
 
 use Carbon\CarbonInterface;
 use Closure;
-use GhostZero\LPTHOOT\Exceptions\AccessTokenExpired;
-use GhostZero\LPTHOOT\Jobs\SubscribeTwitchWebhooks;
-use GhostZero\LPTHOOT\Utils\OauthCredentials;
+use GhostZero\TwitchToolkit\Exceptions\AccessTokenExpired;
+use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
+use GhostZero\TwitchToolkit\Utils\OauthCredentials;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -27,9 +27,9 @@ class Channel extends Model
     public const OPTION_CAPABILITIES = 'capabilities';
     public const OPTION_BROADCASTER_TYPE = 'broadcaster_type';
 
-    private const LPTHOOT_REQUIRES_FRESH_OAUTH_CREDENTIALS = 'lpthoot:requiresFreshOauthCredentials';
+    private const TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS = 'twitch-toolkit:requiresFreshOauthCredentials';
 
-    protected $table = 'lpthoot_channels';
+    protected $table = 'twitch_toolkit_channels';
 
     protected $casts = [
         'is_online' => 'bool',
@@ -84,7 +84,7 @@ class Channel extends Model
     public static function requiresFreshOauthCredentials($callback)
     {
         static::getEventDispatcher()
-            ->listen(self::LPTHOOT_REQUIRES_FRESH_OAUTH_CREDENTIALS, $callback);
+            ->listen(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, $callback);
     }
 
     private static function mergeDefaultOptions(array $options)
@@ -119,7 +119,7 @@ class Channel extends Model
     public function getOauthAccessTokenAttribute($value)
     {
         if (!$this->oauth_access_token || $this->oauth_expires_at->isPast()) {
-            static::getEventDispatcher()->dispatch(self::LPTHOOT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
+            static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
         }
 
         return $value;

@@ -1,9 +1,9 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Exceptions;
+namespace GhostZero\TwitchToolkit\Exceptions;
 
 use DomainException;
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 
 class AccessTokenExpired extends DomainException
 {

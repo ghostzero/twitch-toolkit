@@ -1,13 +1,13 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Http\Controllers;
+namespace GhostZero\TwitchToolkit\Http\Controllers;
 
 use Exception;
-use GhostZero\LPTHOOT\Events\WebhookWasCalled;
-use GhostZero\LPTHOOT\Models\Channel;
-use GhostZero\LPTHOOT\Models\WebhookSubscription;
-use GhostZero\LPTHOOT\TopicParser\Parsers\ParseException;
-use GhostZero\LPTHOOT\TopicParser\TwitchTopicParser;
+use GhostZero\TwitchToolkit\Events\WebhookWasCalled;
+use GhostZero\TwitchToolkit\Models\Channel;
+use GhostZero\TwitchToolkit\Models\WebhookSubscription;
+use GhostZero\TwitchToolkit\TopicParser\Parsers\ParseException;
+use GhostZero\TwitchToolkit\TopicParser\TwitchTopicParser;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

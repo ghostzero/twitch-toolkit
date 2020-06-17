@@ -13,7 +13,7 @@ class AddWebhookSubscriptions extends Migration
      */
     public function up()
     {
-        Schema::create('lpthoot_webhook_subscriptions', function (Blueprint $table) {
+        Schema::create('twitch_toolkit_webhook_subscriptions', function (Blueprint $table) {
             $table->id();
             $table->string('activity');
             $table->unsignedInteger('channel_id');
@@ -31,6 +31,6 @@ class AddWebhookSubscriptions extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lpthoot_webhook_subscriptions');
+        Schema::dropIfExists('twitch_toolkit_webhook_subscriptions');
     }
 }

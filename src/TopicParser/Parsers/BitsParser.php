@@ -1,9 +1,9 @@
 <?php
 
-namespace GhostZero\LPTHOOT\TopicParser\Parsers;
+namespace GhostZero\TwitchToolkit\TopicParser\Parsers;
 
-use GhostZero\LPTHOOT\TopicParser\Contracts\TopicParser;
-use GhostZero\LPTHOOT\TopicParser\TwitchParsedTopic;
+use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
+use GhostZero\TwitchToolkit\TopicParser\TwitchParsedTopic;
 
 class BitsParser extends TopicParser
 {

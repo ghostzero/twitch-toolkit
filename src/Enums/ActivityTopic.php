@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Enums;
+namespace GhostZero\TwitchToolkit\Enums;
 
 class ActivityTopic
 {

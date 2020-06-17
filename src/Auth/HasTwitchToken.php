@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Auth;
+namespace GhostZero\TwitchToolkit\Auth;
 
 use Illuminate\Foundation\Auth\User;
 

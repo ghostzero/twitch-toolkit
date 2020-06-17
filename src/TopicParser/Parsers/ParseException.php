@@ -1,9 +1,9 @@
 <?php
 
-namespace GhostZero\LPTHOOT\TopicParser\Parsers;
+namespace GhostZero\TwitchToolkit\TopicParser\Parsers;
 
 use Exception;
-use GhostZero\LPTHOOT\TopicParser\Contracts\TopicParser;
+use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
 
 class ParseException extends Exception
 {

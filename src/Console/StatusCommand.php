@@ -1,8 +1,8 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 use romanzipp\Twitch\Twitch;
 
@@ -13,14 +13,14 @@ class StatusCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:status';
+    protected $signature = 'twitch-toolkit:status';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Get the current lpthoot system status.';
+    protected $description = 'Get the current twitch toolkit status.';
 
     /**
      * Execute the console command.

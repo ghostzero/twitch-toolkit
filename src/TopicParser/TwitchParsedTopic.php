@@ -1,8 +1,8 @@
 <?php
 
-namespace GhostZero\LPTHOOT\TopicParser;
+namespace GhostZero\TwitchToolkit\TopicParser;
 
-use GhostZero\LPTHOOT\TopicParser\Contracts\TopicParser;
+use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
 
 class TwitchParsedTopic
 {

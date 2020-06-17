@@ -1,11 +1,11 @@
 <?php
 
 
-namespace GhostZero\LPTHOOT;
+namespace GhostZero\TwitchToolkit;
 
 use Illuminate\Support\Facades\Route;
 
-class LPTHOOT
+class TwitchToolkit
 {
     public static $skipMigrations = false;
 

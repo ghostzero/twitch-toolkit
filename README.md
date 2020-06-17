@@ -1,9 +1,11 @@
-# Let's Poll The Hell Out Of Twitch
+# Laravel Twitch Toolkit
 
-A simple library to poll the streamers status instead of using webhooks. Handle up to 400.000 channels per 5 minutes.
+The main idea of this laravel package is to make it performant and easy to solve certain API problems with Twitch. Furthermore this package offers a toolkit to simplify certain processes:
 
-![](https://media1.tenor.com/images/febe616434a96154fb7010bd9fb49322/tenor.gif)
-
+* Twitch Webhook/Polling Management
+* Twitch Webhooks as Laravel Events
+* Twitch Username/ID Resolver & Cache
+* Twitch Extension Guard Middleware
 
 ## Installation
 
@@ -11,12 +13,12 @@ A simple library to poll the streamers status instead of using webhooks. Handle 
 /*
  * Package Service Providers...
  */
-\GhostZero\LPTHOOT\Providers\PollServiceProvider::class,
+\GhostZero\TwitchToolkit\Providers\PollServiceProvider::class,
 ```
 
 ```php
-$schedule->command('lpthoot:poll')->everyFiveMinutes();
-$schedule->command('lpthoot:subscribe-webhooks')->weekly();
+$schedule->command('twitch-toolkit:poll')->everyFiveMinutes();
+$schedule->command('twitch-toolkit:subscribe-webhooks')->weekly();
 ```
 
 ## Webhooks

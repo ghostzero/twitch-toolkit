@@ -1,8 +1,8 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Events;
+namespace GhostZero\TwitchToolkit\Events;
 
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
