@@ -1,11 +1,11 @@
 <?php
 
-namespace GhostZero\LPTHOOT\TopicParser;
+namespace GhostZero\TwitchToolkit\TopicParser;
 
 use Exception;
-use GhostZero\LPTHOOT\Enums\ActivityTopic;
-use GhostZero\LPTHOOT\TopicParser\Contracts\TopicParser;
-use GhostZero\LPTHOOT\TopicParser\Parsers;
+use GhostZero\TwitchToolkit\Enums\ActivityTopic;
+use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
+use GhostZero\TwitchToolkit\TopicParser\Parsers;
 
 class TwitchTopicParser
 {

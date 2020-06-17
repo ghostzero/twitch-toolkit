@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Models;
+namespace GhostZero\TwitchToolkit\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class WebhookSubscription extends Model
 {
-    protected $table = 'lpthoot_webhook_subscriptions';
+    protected $table = 'twitch_toolkit_webhook_subscriptions';
 
     protected $guarded = [];
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
 use Illuminate\Console\Command;
 use romanzipp\Twitch\Twitch;
@@ -12,7 +12,7 @@ class ClearWebhooksCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:clear-webhooks';
+    protected $signature = 'twitch-toolkit:clear-webhooks';
 
     /**
      * The console command description.

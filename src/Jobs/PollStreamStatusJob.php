@@ -1,10 +1,10 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Jobs;
+namespace GhostZero\TwitchToolkit\Jobs;
 
-use GhostZero\LPTHOOT\Events\StreamDown;
-use GhostZero\LPTHOOT\Events\StreamUp;
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Events\StreamDown;
+use GhostZero\TwitchToolkit\Events\StreamUp;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,7 +42,7 @@ class PollStreamStatusJob implements ShouldQueue
     public function handle(Twitch $twitch)
     {
         /** @noinspection PhpUndefinedMethodInspection */
-        Redis::throttle('lpthoot:throttle')->allow(500)->every(60)->then(function () use ($twitch) {
+        Redis::throttle('twitch-toolkit:throttle')->allow(500)->every(60)->then(function () use ($twitch) {
             $this->handleNow($twitch);
         }, function () {
             // Could not obtain lock...

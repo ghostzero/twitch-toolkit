@@ -1,12 +1,12 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Providers;
+namespace GhostZero\TwitchToolkit\Providers;
 
-use GhostZero\LPTHOOT\Console;
-use GhostZero\LPTHOOT\LPTHOOT;
+use GhostZero\TwitchToolkit\Console;
+use GhostZero\TwitchToolkit\TwitchToolkit;
 use Illuminate\Support\ServiceProvider;
 
-class PollServiceProvider extends ServiceProvider
+class TwitchToolkitServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -16,7 +16,7 @@ class PollServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../../config/lpthoot.php', 'lpthoot'
+            __DIR__ . '/../../config/twitch-toolkit.php', 'twitch-toolkit'
         );
     }
 
@@ -27,12 +27,12 @@ class PollServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if (!LPTHOOT::$skipMigrations) {
+        if (!TwitchToolkit::$skipMigrations) {
             $this->loadMigrationsFrom(__DIR__ . '/../../migrations');
         }
 
         $this->publishes([
-            __DIR__ . '/../../config/lpthoot.php' => config_path('lpthoot.php')
+            __DIR__ . '/../../config/twitch-toolkit.php' => config_path('twitch-toolkit.php')
         ], 'config');
 
         $this->publishes([

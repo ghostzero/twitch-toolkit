@@ -1,8 +1,8 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 use romanzipp\Twitch\Twitch;
 
@@ -13,7 +13,7 @@ class SubscribeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:subscribe {login} {--capability=*}';
+    protected $signature = 'twitch-toolkit:subscribe {login} {--capability=*}';
 
     /**
      * The console command description.

@@ -1,10 +1,10 @@
 <?php
 
-namespace GhostZero\LPTHOOT\TopicParser\Contracts;
+namespace GhostZero\TwitchToolkit\TopicParser\Contracts;
 
 use Exception;
-use GhostZero\LPTHOOT\TopicParser\TwitchParsedTopic;
-use GhostZero\LPTHOOT\Utils\TwitchUserResolver;
+use GhostZero\TwitchToolkit\TopicParser\TwitchParsedTopic;
+use GhostZero\TwitchToolkit\Utils\TwitchUserResolver;
 use romanzipp\Twitch\Twitch;
 
 abstract class TopicParser

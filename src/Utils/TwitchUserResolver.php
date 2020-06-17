@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Utils;
+namespace GhostZero\TwitchToolkit\Utils;
 
 use Closure;
 use Exception;

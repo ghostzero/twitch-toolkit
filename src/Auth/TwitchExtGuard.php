@@ -1,6 +1,6 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Auth;
+namespace GhostZero\TwitchToolkit\Auth;
 
 use Exception;
 use Firebase\JWT\JWT;
@@ -10,7 +10,6 @@ use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

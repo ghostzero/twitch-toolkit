@@ -1,9 +1,9 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\LPTHOOT\Jobs\PollStreamStatusJob;
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Jobs\PollStreamStatusJob;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use romanzipp\Twitch\Twitch;
@@ -15,7 +15,7 @@ class PollCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:poll';
+    protected $signature = 'twitch-toolkit:poll';
 
     /**
      * The console command description.

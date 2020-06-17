@@ -1,12 +1,12 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Jobs;
+namespace GhostZero\TwitchToolkit\Jobs;
 
 use DateTime;
 use Exception;
-use GhostZero\LPTHOOT\Enums\ActivityTopic;
-use GhostZero\LPTHOOT\Models\Channel;
-use GhostZero\LPTHOOT\Models\WebhookSubscription;
+use GhostZero\TwitchToolkit\Enums\ActivityTopic;
+use GhostZero\TwitchToolkit\Models\Channel;
+use GhostZero\TwitchToolkit\Models\WebhookSubscription;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Redis\LimiterTimeoutException;

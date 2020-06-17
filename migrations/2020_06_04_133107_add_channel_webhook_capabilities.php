@@ -1,6 +1,6 @@
 <?php
 
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +14,7 @@ class AddChannelWebhookCapabilities extends Migration
      */
     public function up()
     {
-        Schema::table('lpthoot_channels', function (Blueprint $table) {
+        Schema::table('twitch_toolkit_channels', function (Blueprint $table) {
             $table->string('capabilities')->default(json_encode([
                 Channel::TYPE_POLLING,
             ]));
@@ -32,7 +32,7 @@ class AddChannelWebhookCapabilities extends Migration
      */
     public function down()
     {
-        Schema::table('lpthoot_channels', function (Blueprint $table) {
+        Schema::table('twitch_toolkit_channels', function (Blueprint $table) {
             $table->dropColumn([
                 'capabilities',
                 'oauth_access_token',

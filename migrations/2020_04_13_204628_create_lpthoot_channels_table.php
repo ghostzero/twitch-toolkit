@@ -13,7 +13,7 @@ class CreateLpthootChannelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lpthoot_channels', function (Blueprint $table) {
+        Schema::create('twitch_toolkit_channels', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->boolean('is_online')->default(false);
             $table->timestamp('changed_at')->nullable();
@@ -28,6 +28,6 @@ class CreateLpthootChannelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lpthoot_channels');
+        Schema::dropIfExists('twitch_toolkit_channels');
     }
 }

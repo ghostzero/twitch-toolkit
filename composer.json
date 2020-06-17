@@ -1,6 +1,6 @@
 {
-    "name": "ghostzero/lpthoot",
-    "description": "A simple library to poll the streamers status instead of using webhooks.",
+    "name": "ghostzero/twitch-toolkit",
+    "description": "This package offers a toolkit to simplify certain processes",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -19,13 +19,13 @@
     },
     "autoload": {
         "psr-4": {
-            "GhostZero\\LPTHOOT\\": "src/"
+            "GhostZero\\TwitchToolkit\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "GhostZero\\LPTHOOT\\Providers\\PollServiceProvider"
+                "GhostZero\\TwitchToolkit\\Providers\\TwitchToolkitServiceProvider"
             ]
         }
     }

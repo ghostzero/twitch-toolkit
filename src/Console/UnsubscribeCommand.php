@@ -1,8 +1,8 @@
 <?php
 
-namespace GhostZero\LPTHOOT\Console;
+namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\LPTHOOT\Models\Channel;
+use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 use romanzipp\Twitch\Twitch;
 
@@ -13,7 +13,7 @@ class UnsubscribeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'lpthoot:unsubscribe {login}';
+    protected $signature = 'twitch-toolkit:unsubscribe {login}';
 
     /**
      * The console command description.
