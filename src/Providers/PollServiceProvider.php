@@ -3,6 +3,7 @@
 namespace GhostZero\LPTHOOT\Providers;
 
 use GhostZero\LPTHOOT\Console;
+use GhostZero\LPTHOOT\LPTHOOT;
 use Illuminate\Support\ServiceProvider;
 
 class PollServiceProvider extends ServiceProvider
@@ -14,7 +15,9 @@ class PollServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->mergeConfigFrom(
+            __DIR__ . '/../../config/lpthoot.php', 'lpthoot'
+        );
     }
 
     /**
@@ -24,7 +27,18 @@ class PollServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__.'/../../migrations');
+        if (!LPTHOOT::$skipMigrations) {
+            $this->loadMigrationsFrom(__DIR__ . '/../../migrations');
+        }
+
+        $this->publishes([
+            __DIR__ . '/../../config/lpthoot.php' => config_path('lpthoot.php')
+        ], 'config');
+
+        $this->publishes([
+            __DIR__ . '/../../migrations/' => database_path('migrations')
+        ], 'migrations');
+
         $this->registerCommands();
     }
 

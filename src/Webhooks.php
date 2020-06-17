@@ -10,6 +10,7 @@ class Webhooks
      * Add routes to automatically handle webhooks flow.
      *
      * @param array $options
+     * @deprecated Please use LPTHOOT::routes(...) instead. This method will be removed in version 4.
      */
     public static function routes($options = [])
     {
