@@ -6,10 +6,8 @@ use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
 use Illuminate\Auth\RequestGuard;
-use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,17 +16,12 @@ class TwitchExtGuard
     /**
      * @var string
      */
-    public static $USER_CLASS = User::class;
-
-    /**
-     * @var string
-     */
     public static $CACHE_KEY = 'twitch:auth.%s';
 
     /**
      * @var UserProvider
      */
-    protected $provider;
+    protected $userProvider;
 
     /**
      * The secrets of the twitch extension guard.
@@ -39,13 +32,11 @@ class TwitchExtGuard
     /**
      * Create a new authentication guard.
      *
-     * @param UserProvider $provider
-     *
-     * @return void
+     * @param UserProvider $userProvider
      */
-    public function __construct(UserProvider $provider)
+    public function __construct(UserProvider $userProvider)
     {
-        $this->provider = $provider;
+        $this->userProvider = $userProvider;
     }
 
     /**
@@ -65,9 +56,11 @@ class TwitchExtGuard
      */
     public function user(Request $request)
     {
+
         if (!$request->headers->has('Authorization')) {
             return null;
         }
+
         try {
             $token = explode(' ', $request->headers->get('Authorization'))[1] ?? null;
 
@@ -78,14 +71,6 @@ class TwitchExtGuard
         } catch (Exception $exception) {
             return null;
         }
-    }
-
-    /**
-     * @return string|User|HasTwitchToken
-     */
-    public function getUserClass()
-    {
-        return self::$USER_CLASS;
     }
 
     private function getCacheKey($token): string
@@ -112,18 +97,15 @@ class TwitchExtGuard
      * Add this to your AuthServiceProvider::boot() method.
      *
      * @param string $secret
-     * @param string $userClass
+     * @param UserProvider $twitchUserProvider
      * @param string $driver
      */
-    public static function register(string $secret, string $userClass, $driver = 'twitch'): void
+    public static function register(string $secret, UserProvider $twitchUserProvider, $driver = 'twitch'): void
     {
-        self::$USER_CLASS = $userClass;
         self::addExtSecret($secret);
-        Auth::extend($driver, function ($app, $name, array $config) {
-            return new RequestGuard(function ($request) use ($config) {
-                return (new self(
-                    Auth::createUserProvider($config['provider'])
-                ))->user($request);
+        Auth::extend($driver, function ($app, $name, array $config) use ($twitchUserProvider) {
+            return new RequestGuard(function ($request) use ($config, $twitchUserProvider) {
+                return (new self($twitchUserProvider))->user($request);
             }, app('request'));
         });
     }
@@ -134,18 +116,16 @@ class TwitchExtGuard
      */
     private function resolveUser($decoded)
     {
-        $user = $this->getUserClass()::query()->where(['platform_id' => $decoded->user_id])->first();
-        if ($user !== null) {
-            if (method_exists($user, 'withTwitchToken')) {
-                $user = $user->withTwitchToken($decoded);
-                $user->convertAnonymousAccount();
-            }
-        } elseif (method_exists($user, 'createFromTwitchToken')) {
-            $user = $this->getUserClass()::createFromTwitchToken($decoded);
+        $user = $this->userProvider->retrieveById($decoded->user_id);
+        $user = $user ?? $this->userProvider->createFromTwitchToken($decoded);
+
+        if ($user === null) {
+            return null;
         }
 
-        if (!$user) {
-            return null;
+        if (method_exists($user, 'withTwitchToken')) {
+            $user = $user->withTwitchToken($decoded);
+            $user->convertAnonymousAccount();
         }
 
         $user->cached_at = now();
