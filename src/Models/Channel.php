@@ -44,7 +44,7 @@ class Channel extends Model
     {
         $self = self::updateSubscription($id, $options);
 
-        if (in_array(self::TYPE_WEBHOOK, $self->capabilities)) {
+        if (in_array(self::TYPE_WEBHOOK, $self->capabilities, true)) {
             dispatch(new SubscribeTwitchWebhooks($self));
         }
 
@@ -81,7 +81,7 @@ class Channel extends Model
      * @param Closure|string $callback
      * @return void
      */
-    public static function requiresFreshOauthCredentials($callback)
+    public static function requiresFreshOauthCredentials($callback): void
     {
         static::getEventDispatcher()
             ->listen(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, $callback);
@@ -118,7 +118,7 @@ class Channel extends Model
 
     public function getOauthAccessTokenAttribute($value)
     {
-        if (!$this->oauth_access_token || $this->oauth_expires_at->isPast()) {
+        if (empty($value) || $this->oauth_expires_at->isPast()) {
             static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
         }
 
