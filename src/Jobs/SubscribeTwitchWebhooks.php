@@ -79,7 +79,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             ->then(function () use ($twitch) {
                 try {
                     // skip streams webhooks, if we already poll them
-                    if (!in_array(Channel::TYPE_POLLING, $this->channel->capabilities)) {
+                    if (!in_array(Channel::TYPE_POLLING, $this->channel->capabilities, true)) {
                         $this->subscribe($twitch, $this->channel, ActivityTopic::STREAMS);
                     }
                     $this->subscribe($twitch, $this->channel, ActivityTopic::FOLLOWS);
@@ -153,7 +153,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     private function getCallbackUrl(WebhookSubscription $subscription): string
     {
-        return route('lpthoot.webhooks.twitch.callback', [
+        return route('twitch-toolkit.webhooks.twitch.callback', [
             'channel_id' => $subscription->channel_id,
             'activity' => $subscription->activity,
         ]);
