@@ -19,13 +19,18 @@ class TwitchExtGuard
     public static $CACHE_KEY = 'twitch:auth.%s';
 
     /**
+     * @var bool
+     */
+    public static $WITH_CACHE = false;
+
+    /**
      * @var UserProvider
      */
     protected $userProvider;
 
     /**
      * The secrets of the twitch extension guard.
-     * @var string
+     * @var array
      */
     private static $extSecrets = [];
 
@@ -64,10 +69,16 @@ class TwitchExtGuard
         try {
             $token = explode(' ', $request->headers->get('Authorization'))[1] ?? null;
 
-            return cache()->remember($this->getCacheKey($token), now()->addMinutes(5), function () use ($token) {
+            $fn = function () use ($token) {
                 $decoded = $this->decodeAuthorizationToken($token);
                 return $this->resolveUser($decoded);
-            });
+            };
+
+            if (!self::$WITH_CACHE) {
+                return $fn();
+            }
+
+            return cache()->remember($this->getCacheKey($token), now()->addMinutes(5), $fn);
         } catch (Exception $exception) {
             return null;
         }
