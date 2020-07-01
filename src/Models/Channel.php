@@ -116,9 +116,18 @@ class Channel extends Model
         ])->save();
     }
 
+    public function getBroadcasterTypeAttribute($value)
+    {
+        if ($this->oauth_expires_at === null || $this->oauth_expires_at->isPast()) {
+            static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
+        }
+
+        return $value;
+    }
+
     public function getOauthAccessTokenAttribute($value)
     {
-        if (empty($value) || $this->oauth_expires_at->isPast()) {
+        if (empty($value) || $this->oauth_expires_at === null || $this->oauth_expires_at->isPast()) {
             static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
         }
 
