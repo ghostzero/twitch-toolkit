@@ -34,9 +34,9 @@ class Channel extends Model
     protected $casts = [
         'is_online' => 'bool',
         'capabilities' => 'array',
+        'oauth_expires_at' => 'datetime',
+        'changed_at' => 'datetime',
     ];
-
-    protected $dates = ['changed_at'];
 
     protected $guarded = [];
 
