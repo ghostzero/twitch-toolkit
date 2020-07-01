@@ -8,6 +8,7 @@ use GhostZero\TwitchToolkit\Exceptions\AccessTokenExpired;
 use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
 use GhostZero\TwitchToolkit\Utils\OauthCredentials;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property string id
@@ -118,7 +119,7 @@ class Channel extends Model
 
     public function getBroadcasterTypeAttribute($value)
     {
-        if ($this->oauth_expires_at === null || $this->oauth_expires_at->isPast()) {
+        if ($this->isOauthExpired()) {
             static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
         }
 
@@ -127,10 +128,27 @@ class Channel extends Model
 
     public function getOauthAccessTokenAttribute($value)
     {
-        if (empty($value) || $this->oauth_expires_at === null || $this->oauth_expires_at->isPast()) {
+        if (empty($value) || $this->isOauthExpired()) {
             static::getEventDispatcher()->dispatch(self::TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS, [$this]);
         }
 
         return $value;
+    }
+
+    private function isOauthExpired(): bool
+    {
+        if ($this->oauth_expires_at === null) {
+            return true;
+        }
+
+        if ($this->oauth_expires_at instanceof CarbonInterface) {
+            return $this->oauth_expires_at->isPast();
+        }
+
+        if ($carbonInterface = Carbon::parse($this->oauth_expires_at)) {
+            return $carbonInterface->isPast();
+        }
+
+        throw new \DomainException('Cannot determinate expiration date.');
     }
 }
