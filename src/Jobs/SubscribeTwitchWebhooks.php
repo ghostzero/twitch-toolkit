@@ -112,13 +112,13 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
         // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
         if (empty($channel->broadcaster_type) && $requiresUserAccessToken) {
-            Log::info("Skipped to subscribe {$channel->id}:{$activity}, because the broadcaster type is empty.");
+            $this->skip($channel->getKey(), $activity, 'The broadcaster type is empty.');
             return;
         }
 
         if ($requiresUserAccessToken) {
             if (empty($channel->oauth_access_token)) {
-                Log::info("Skipped to subscribe {$channel->id}:{$activity}, because the oauth access token is empty.");
+                $this->skip($channel->getKey(), $activity, 'The oauth access token is empty.');
                 return;
             } else {
                 $twitch->setToken($channel->oauth_access_token);
@@ -187,5 +187,11 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             default:
                 throw new RuntimeException(sprintf('Cannot find hub.topic url by `%s` activity.', $activity));
         }
+    }
+
+    private function skip($channelId, string $activity, string $reason): void
+    {
+        Log::info("Skipped to subscribe {$channelId}:{$activity}. Deny previous subscription. Reason: {$reason}");
+        WebhookSubscription::query()->where(['channel_id' => $channelId, 'activity' => $activity])->delete();
     }
 }
