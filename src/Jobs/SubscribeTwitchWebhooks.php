@@ -112,11 +112,17 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
         // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
         if (empty($channel->broadcaster_type) && $requiresUserAccessToken) {
+            Log::info("Skipped to subscribe {$channel->id}:{$activity}, because the broadcaster type is empty.");
             return;
         }
 
         if ($requiresUserAccessToken) {
-            $twitch->setToken($channel->oauth_access_token);
+            if (empty($channel->oauth_access_token)) {
+                Log::info("Skipped to subscribe {$channel->id}:{$activity}, because the oauth access token is empty.");
+                return;
+            } else {
+                $twitch->setToken($channel->oauth_access_token);
+            }
         }
 
         $topic = $this->getHubTopic($twitch, $channel, $activity);
