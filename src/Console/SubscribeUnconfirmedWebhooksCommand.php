@@ -28,7 +28,7 @@ class SubscribeUnconfirmedWebhooksCommand extends Command
         $count = 0;
         WebhookSubscription::query()
             ->whereNull('confirmed_at')
-            ->limit(100)->get()
+            ->inRandomOrder()->limit(100)->get()
             ->each(function (WebhookSubscription $subscription) use (&$count) {
                 dispatch(new SubscribeTwitchWebhooks($subscription->channel));
                 $count++;
