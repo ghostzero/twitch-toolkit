@@ -33,7 +33,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
     public const OPTIONS_DEBUG = 'debug_mode';
     public const OPTIONS_ONLY = 'subscribe_only';
 
-    private const TWITCH_WEBHOOK_MAX_LOCKS = 60;
+    private const TWITCH_WEBHOOK_MAX_LOCKS = 600;
     private const TWITCH_WEBHOOK_DECAY = 60;
 
     /**
@@ -85,11 +85,12 @@ class SubscribeTwitchWebhooks implements ShouldQueue
                     $this->subscribe($twitch, $this->channel, ActivityTopic::FOLLOWS);
                     $this->subscribe($twitch, $this->channel, ActivityTopic::SUBSCRIPTIONS);
                 } catch (Exception $exception) {
-                    Log::critical('Creating twitch subscription failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
-                    $this->release(150);
+                    Log::critical('Creating twitch webhook failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
+                    $this->release(self::TWITCH_WEBHOOK_DECAY);
                 }
             }, function () {
-                $this->release(150);
+                Log::critical("Reached webhook throttle. Release job for channel {$this->channel->getKey()}.");
+                $this->release(self::TWITCH_WEBHOOK_DECAY);
             });
     }
 
@@ -191,7 +192,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     private function skip($channelId, string $activity, string $reason): void
     {
-        Log::info("Skipped to subscribe {$channelId}:{$activity}. Deny previous subscription. Reason: {$reason}");
+        Log::warning("Skipped to subscribe {$channelId}:{$activity}. Deny previous subscription. Reason: {$reason}");
         WebhookSubscription::query()->where(['channel_id' => $channelId, 'activity' => $activity])->delete();
     }
 }

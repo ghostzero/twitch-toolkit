@@ -2,6 +2,7 @@
 
 namespace GhostZero\TwitchToolkit\Console;
 
+use Closure;
 use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
 use GhostZero\TwitchToolkit\Models\WebhookSubscription;
 use Illuminate\Console\Command;
@@ -21,19 +22,39 @@ class SubscribeUnconfirmedWebhooksCommand extends Command
     protected $description = 'Re-subscribe to all twitch webhooks.';
 
     /**
+     * @var int
+     */
+    private $count = 0;
+
+    /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        $count = 0;
+        // renew all unconfirmed webhooks
         WebhookSubscription::query()
             ->whereNull('confirmed_at')
-            ->inRandomOrder()->limit(100)->get()
-            ->each(function (WebhookSubscription $subscription) use (&$count) {
-                dispatch(new SubscribeTwitchWebhooks($subscription->channel));
-                $count++;
-            });
+            ->inRandomOrder()->limit(50)->get()
+            ->each($this->resubscribe());
 
-        $this->info(sprintf('Re-queued %s channels to subscribe to twitch webhooks.', $count));
+        // renew all expired webhooks
+        WebhookSubscription::query()
+            ->whereRaw('DATE_SUB(DATE_ADD(leased_at, INTERVAL lease SECOND), INTERVAL 90 SECOND) <= NOW()')
+            ->inRandomOrder()->limit(100)->get()
+            ->each($this->resubscribe());
+
+        $this->info(sprintf('Re-queued %s channels to subscribe to twitch webhooks.', $this->count));
+    }
+
+    private function resubscribe(): Closure
+    {
+        return function (WebhookSubscription $subscription) {
+            dispatch(new SubscribeTwitchWebhooks($subscription->channel, [
+                SubscribeTwitchWebhooks::OPTIONS_ONLY => [
+                    $subscription->activity,
+                ]
+            ]));
+            $this->count++;
+        };
     }
 }
