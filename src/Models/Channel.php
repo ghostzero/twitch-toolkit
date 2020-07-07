@@ -27,6 +27,8 @@ class Channel extends Model
 
     public const OPTION_CAPABILITIES = 'capabilities';
     public const OPTION_BROADCASTER_TYPE = 'broadcaster_type';
+    public const OPTION_AUTO_SUBSCRIBE_WEBHOOKS = 'auto_subscribe_webhooks';
+    public const OPTION_DISPATCH_NOW = 'dispatch_now';
 
     private const TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS = 'twitch-toolkit:requiresFreshOauthCredentials';
 
@@ -45,8 +47,15 @@ class Channel extends Model
     {
         $self = self::updateSubscription($id, $options);
 
-        if (in_array(self::TYPE_WEBHOOK, $self->capabilities, true)) {
-            dispatch(new SubscribeTwitchWebhooks($self));
+        $autoSubscribe = $options[self::OPTION_AUTO_SUBSCRIBE_WEBHOOKS] ?? false;
+        $dispatchNow = $options[self::OPTION_DISPATCH_NOW] ?? false;
+
+        if ($autoSubscribe && in_array(self::TYPE_WEBHOOK, $self->capabilities, true)) {
+            if ($dispatchNow) {
+                dispatch_now(new SubscribeTwitchWebhooks($self));
+            } else {
+                dispatch(new SubscribeTwitchWebhooks($self));
+            }
         }
 
         return $self;
