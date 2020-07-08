@@ -32,6 +32,10 @@ class Channel extends Model
 
     private const TWITCH_TOOLKIT_REQUIRES_FRESH_OAUTH_CREDENTIALS = 'twitch-toolkit:requiresFreshOauthCredentials';
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $table = 'twitch_toolkit_channels';
 
     protected $casts = [
