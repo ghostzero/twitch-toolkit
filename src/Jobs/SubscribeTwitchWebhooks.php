@@ -96,7 +96,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
         }
 
         $callbackUrl = $this->getCallbackUrl($channel->getKey(), $activity);
-        $feedUrl = Subscriber::getFeedUrl($twitch, $channel, $activity);
+        $feedUrl = Subscriber::getFeedUrl($twitch, $channel->getKey(), $activity);
 
         (new Subscriber())->subscribe($callbackUrl, $feedUrl, $channel->getKey());
     }

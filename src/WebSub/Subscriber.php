@@ -106,21 +106,20 @@ class Subscriber
      * Returns a hub.topic url for the twitch api.
      *
      * @param Twitch $twitch
-     * @param Channel $channel
+     * @param string $channelId
      * @param string $activity
      *
      * @return string
-     * @throws Exception
      */
-    public static function getFeedUrl(Twitch $twitch, Channel $channel, $activity): string
+    public static function getFeedUrl(Twitch $twitch, string $channelId, $activity): string
     {
         switch ($activity) {
             case ActivityTopic::FOLLOWS:
-                return $twitch->webhookTopicUserGainsFollower($channel->getKey());
+                return $twitch->webhookTopicUserGainsFollower($channelId);
             case ActivityTopic::STREAMS:
-                return $twitch->webhookTopicStreamMonitor($channel->getKey());
+                return $twitch->webhookTopicStreamMonitor($channelId);
             case ActivityTopic::SUBSCRIPTIONS:
-                return $twitch::BASE_URI . 'subscriptions/events?broadcaster_id=' . $channel->getKey() . '&first=1';
+                return $twitch::BASE_URI . 'subscriptions/events?broadcaster_id=' . $channelId . '&first=1';
             default:
                 throw new RuntimeException(sprintf('Cannot find hub.topic url by `%s` activity.', $activity));
         }
