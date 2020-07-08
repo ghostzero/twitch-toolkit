@@ -8,6 +8,7 @@ use GhostZero\TwitchToolkit\Enums\ActivityTopic;
 use GhostZero\TwitchToolkit\Jobs\WebSubSubscriber;
 use GhostZero\TwitchToolkit\Models\WebSub;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use romanzipp\Twitch\Twitch;
 use RuntimeException;
@@ -58,6 +59,8 @@ class Subscriber
                 'expires_at' => $expiresAt,
                 'last_response' => $response,
             ]);
+        } else {
+            Log::warning("Approve ignored. Feed $feedUrl not found");
         }
 
         return $webSub;
@@ -73,6 +76,8 @@ class Subscriber
                 'denied_reason' => $reason,
                 'last_response' => $response,
             ]);
+        } else {
+            Log::warning("Deny ignored. Feed $feedUrl not found");
         }
 
         return $webSub;
@@ -86,6 +91,8 @@ class Subscriber
                 'denied' => false,
                 'last_response' => $request->toArray(),
             ]);
+        } else {
+            Log::warning("Unsubscribe ignored. Feed $feedUrl not found");
         }
 
         return $webSub;

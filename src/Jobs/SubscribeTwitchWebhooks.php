@@ -89,12 +89,10 @@ class SubscribeTwitchWebhooks implements ShouldQueue
         if ($requiresUserAccessToken) {
             // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
             if (empty($channel->broadcaster_type)) {
-                $this->skip($channel->getKey(), $activity, 'The broadcaster type is empty.');
-                $subscriber->deny($feedUrl, 'The broadcaster type is empty.');
+                $this->skip($subscriber, $feedUrl, 'The broadcaster type is empty.');
                 return;
             } elseif (empty($channel->oauth_access_token)) {
-                $this->skip($channel->getKey(), $activity, 'The oauth access token is empty.');
-                $subscriber->deny($feedUrl, 'The oauth access token is empty.');
+                $this->skip($subscriber, $feedUrl, 'The oauth access token is empty.');
                 return;
             } else {
                 $twitch->setToken($channel->oauth_access_token);
@@ -112,8 +110,9 @@ class SubscribeTwitchWebhooks implements ShouldQueue
         ]);
     }
 
-    private function skip(string $channelId, string $activity, string $reason): void
+    private function skip(Subscriber $subscriber, string $feedUrl, string $reason): void
     {
-        Log::warning("Skipped to subscribe {$channelId}:{$activity}. Reason: {$reason}");
+        Log::warning("Skipped to subscribe $feedUrl. Reason: {$reason}");
+        $subscriber->deny($feedUrl, 'The broadcaster type is empty.');
     }
 }

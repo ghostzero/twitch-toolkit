@@ -24,7 +24,7 @@ class CreateTwitchToolkitWebSubsTable extends Migration
             $table->boolean('accepted')->default(false);
             $table->boolean('active')->default(false);
             $table->integer('lease_seconds')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamp('leased_at')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->boolean('denied')->default(false);
