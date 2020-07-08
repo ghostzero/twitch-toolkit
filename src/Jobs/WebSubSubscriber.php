@@ -50,6 +50,9 @@ class WebSubSubscriber implements ShouldQueue
                     'subscription_id' => $this->webSub->getKey(),
                     'accepted' => $response->success(),
                 ]);
+            }, function () {
+                Log::warning("Reached webhook throttle. Release job for feed {$this->webSub->feed_url}.");
+                $this->release(self::TWITCH_WEBHOOK_DECAY);
             });
     }
 }
