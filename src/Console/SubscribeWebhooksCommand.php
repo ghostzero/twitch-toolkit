@@ -36,7 +36,7 @@ class SubscribeWebhooksCommand extends Command
         // renew all active webhooks that will expire soon
         WebSub::query()
             ->where(['active' => true])
-            ->whereDate('expires_at', '>=', Carbon::now()->subMinutes(2))
+            ->whereDate('expires_at', '<=', Carbon::now())
             ->inRandomOrder()->limit(50)->get()
             ->each($this->resubscribe($subscriber));
 
