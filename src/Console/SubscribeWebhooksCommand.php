@@ -2,9 +2,12 @@
 
 namespace GhostZero\TwitchToolkit\Console;
 
-use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
-use GhostZero\TwitchToolkit\Models\Channel;
+use Carbon\Carbon;
+use Closure;
+use GhostZero\TwitchToolkit\Models\WebSub;
+use GhostZero\TwitchToolkit\WebSub\Subscriber;
 use Illuminate\Console\Command;
+use romanzipp\Twitch\Twitch;
 
 class SubscribeWebhooksCommand extends Command
 {
@@ -22,20 +25,30 @@ class SubscribeWebhooksCommand extends Command
      */
     protected $description = 'Subscribe to all twitch webhooks.';
 
+    private int $count = 0;
+
     /**
      * Execute the console command.
+     * @param Twitch $twitch
+     * @param Subscriber $subscriber
      */
-    public function handle(): void
+    public function handle(Subscriber $subscriber): void
     {
-        $count = 0;
-        Channel::query()
-            ->whereNotNull('oauth_access_token')
-            ->whereDate('oauth_expires_at', '>=', now())
-            ->each(function (Channel $channel) use (&$count) {
-                dispatch(new SubscribeTwitchWebhooks($channel));
-                $count++;
-            });
+        // renew all active webhooks that will expire soon
+        WebSub::query()
+            ->where(['active' => true])
+            ->whereDate('expires_at', '>=', Carbon::now()->subMinutes(2))
+            ->inRandomOrder()->limit(50)->get()
+            ->each($this->resubscribe($subscriber));
 
-        $this->info(sprintf('Queued %s channels to subscribe to twitch webhooks.', $count));
+        $this->info(sprintf('Re-queued %s channels to subscribe to twitch webhooks.', $this->count));
+    }
+
+    private function resubscribe(Subscriber $subscriber): Closure
+    {
+        return function (WebSub $webSub) use ($subscriber) {
+            $subscriber->subscribe($webSub->callback_url, $webSub->feed_url, $webSub->channel_id);
+            $this->count++;
+        };
     }
 }

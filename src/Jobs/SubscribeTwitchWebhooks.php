@@ -6,45 +6,27 @@ use DateTime;
 use Exception;
 use GhostZero\TwitchToolkit\Enums\ActivityTopic;
 use GhostZero\TwitchToolkit\Models\Channel;
-use GhostZero\TwitchToolkit\Models\WebhookSubscription;
+use GhostZero\TwitchToolkit\WebSub\Subscriber;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 use romanzipp\Twitch\Twitch;
-use RuntimeException;
 
 class SubscribeTwitchWebhooks implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private const LEASE_PRODUCTION = 691200; // 8 days
-    private const LEASE_DEVELOPMENT = 3600; // 1 day
-
     private const AFFILIATE_AND_PARTNER_ONLY_WEBHOOKS = [
         ActivityTopic::SUBSCRIPTIONS,
     ];
 
-    public const OPTIONS_LEASE_TIME = 'lease_time';
-    public const OPTIONS_DEBUG = 'debug_mode';
     public const OPTIONS_ONLY = 'subscribe_only';
 
-    private const TWITCH_WEBHOOK_MAX_LOCKS = 600;
-    private const TWITCH_WEBHOOK_DECAY = 60;
-
-    /**
-     * @var Channel
-     */
-    public $channel;
-
-    /**
-     * @var array
-     */
-    public $options;
+    public Channel $channel;
+    public array $options;
 
     public function __construct(Channel $channel, array $options = [])
     {
@@ -52,8 +34,6 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
         $this->options = array_merge([
             self::OPTIONS_ONLY => null,
-            self::OPTIONS_LEASE_TIME => config('app.env') === 'production'
-                ? self::LEASE_PRODUCTION : self::LEASE_DEVELOPMENT,
         ], $options);
     }
 
@@ -69,29 +49,20 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     /**
      * @param Twitch $twitch
-     * @throws LimiterTimeoutException
      */
     public function handle(Twitch $twitch): void
     {
-        Redis::throttle('throttle:api.twitch.tv/webhooks')
-            ->allow(self::TWITCH_WEBHOOK_MAX_LOCKS)
-            ->every(self::TWITCH_WEBHOOK_DECAY)
-            ->then(function () use ($twitch) {
-                try {
-                    // skip streams webhooks, if we already poll them
-                    if (!in_array(Channel::TYPE_POLLING, $this->channel->capabilities, true)) {
-                        $this->subscribe($twitch, $this->channel, ActivityTopic::STREAMS);
-                    }
-                    $this->subscribe($twitch, $this->channel, ActivityTopic::FOLLOWS);
-                    $this->subscribe($twitch, $this->channel, ActivityTopic::SUBSCRIPTIONS);
-                } catch (Exception $exception) {
-                    Log::critical('Creating twitch webhook failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
-                    $this->release(self::TWITCH_WEBHOOK_DECAY);
-                }
-            }, function () {
-                Log::critical("Reached webhook throttle. Release job for channel {$this->channel->getKey()}.");
-                $this->release(self::TWITCH_WEBHOOK_DECAY);
-            });
+        try {
+            // skip streams webhooks, if we already poll them
+            if (!in_array(Channel::TYPE_POLLING, $this->channel->capabilities, true)) {
+                $this->subscribe($twitch, $this->channel, ActivityTopic::STREAMS);
+            }
+            $this->subscribe($twitch, $this->channel, ActivityTopic::FOLLOWS);
+            $this->subscribe($twitch, $this->channel, ActivityTopic::SUBSCRIPTIONS);
+        } catch (Exception $exception) {
+            Log::critical('Creating twitch webhook failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
+            $this->release(WebSubSubscriber::TWITCH_WEBHOOK_DECAY);
+        }
     }
 
     /**
@@ -111,14 +82,12 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
         $requiresUserAccessToken = in_array($activity, self::AFFILIATE_AND_PARTNER_ONLY_WEBHOOKS, true);
 
-        // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
-        if (empty($channel->broadcaster_type) && $requiresUserAccessToken) {
-            $this->skip($channel->getKey(), $activity, 'The broadcaster type is empty.');
-            return;
-        }
-
         if ($requiresUserAccessToken) {
-            if (empty($channel->oauth_access_token)) {
+            // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
+            if (empty($channel->broadcaster_type)) {
+                $this->skip($channel->getKey(), $activity, 'The broadcaster type is empty.');
+                return;
+            } elseif (empty($channel->oauth_access_token)) {
                 $this->skip($channel->getKey(), $activity, 'The oauth access token is empty.');
                 return;
             } else {
@@ -126,73 +95,22 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             }
         }
 
-        $topic = $this->getHubTopic($twitch, $channel, $activity);
-        $lease = $this->options[self::OPTIONS_LEASE_TIME];
-        $leaseInformation = [
-            'leased_at' => now()->format('Y-m-d H:i:s'),
-            'lease' => $lease,
-        ];
+        $callbackUrl = $this->getCallbackUrl($channel->getKey(), $activity);
+        $feedUrl = Subscriber::getFeedUrl($twitch, $channel, $activity);
 
-        /** @var WebhookSubscription $subscription */
-        $subscription = WebhookSubscription::query()
-            ->firstOrCreate([
-                'channel_id' => $channel->getKey(),
-                'activity' => $activity,
-            ], $leaseInformation);
-
-        $subscription->forceFill($leaseInformation)->save();
-
-        $callback = $this->getCallbackUrl($subscription);
-
-        $response = $twitch->subscribeWebhook($callback, $topic, $lease);
-
-        $context = [
-            'channel_id' => $channel->getQueueableId(),
-            'platform_id' => $channel->getKey(),
-            'callback_url' => $callback,
-            'topic_url' => $topic,
-            'activity' => $activity,
-            'accepted' => $response->success(),
-        ];
-
-        Log::info(sprintf('Sent %s@%s stored webhook subscription request to twitch.', $activity, $channel->getKey()), $context);
+        (new Subscriber())->subscribe($callbackUrl, $feedUrl, $channel->getKey());
     }
 
-    private function getCallbackUrl(WebhookSubscription $subscription): string
+    protected function getCallbackUrl(string $channelId, string $activity): string
     {
         return route('twitch-toolkit.webhooks.twitch.callback', [
-            'channel_id' => $subscription->channel_id,
-            'activity' => $subscription->activity,
+            'channel_id' => $channelId,
+            'activity' => $activity,
         ]);
     }
 
-    /**
-     * Returns a hub.topic url for the twitch api.
-     *
-     * @param Twitch $twitch
-     * @param Channel $channel
-     * @param string $activity
-     *
-     * @return string
-     * @throws Exception
-     */
-    private function getHubTopic(Twitch $twitch, Channel $channel, $activity): ?string
+    private function skip(string $channelId, string $activity, string $reason): void
     {
-        switch ($activity) {
-            case ActivityTopic::FOLLOWS:
-                return $twitch->webhookTopicUserGainsFollower($channel->getKey());
-            case ActivityTopic::STREAMS:
-                return $twitch->webhookTopicStreamMonitor($channel->getKey());
-            case ActivityTopic::SUBSCRIPTIONS:
-                return $twitch::BASE_URI . 'subscriptions/events?broadcaster_id=' . $channel->getKey() . '&first=1';
-            default:
-                throw new RuntimeException(sprintf('Cannot find hub.topic url by `%s` activity.', $activity));
-        }
-    }
-
-    private function skip($channelId, string $activity, string $reason): void
-    {
-        Log::warning("Skipped to subscribe {$channelId}:{$activity}. Deny previous subscription. Reason: {$reason}");
-        WebhookSubscription::query()->where(['channel_id' => $channelId, 'activity' => $activity])->delete();
+        Log::warning("Skipped to subscribe {$channelId}:{$activity}. Reason: {$reason}");
     }
 }

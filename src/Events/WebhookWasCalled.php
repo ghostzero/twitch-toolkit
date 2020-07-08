@@ -2,7 +2,6 @@
 
 namespace GhostZero\TwitchToolkit\Events;
 
-use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -11,29 +10,14 @@ class WebhookWasCalled
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var Channel
-     */
-    public $channel;
+    public ?string $channelId;
+    public string $topic;
+    public array $metadata;
+    public string $messageId;
 
-    /**
-     * @var array
-     */
-    public $metadata;
-
-    /**
-     * @var string
-     */
-    public $topic;
-
-    /**
-     * @var string
-     */
-    public $messageId;
-
-    public function __construct(Channel $channel, string $topic, array $metadata, string $messageId)
+    public function __construct(?string $channelId, string $topic, array $metadata, string $messageId)
     {
-        $this->channel = $channel;
+        $this->channelId = $channelId;
         $this->topic = $topic;
         $this->metadata = $metadata;
         $this->messageId = $messageId;

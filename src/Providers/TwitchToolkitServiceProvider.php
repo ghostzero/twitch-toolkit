@@ -48,7 +48,6 @@ class TwitchToolkitServiceProvider extends ServiceProvider
             $this->commands([
                 Console\PollCommand::class,
                 Console\SubscribeCommand::class,
-                Console\SubscribeUnconfirmedWebhooksCommand::class,
                 Console\UnsubscribeCommand::class,
                 Console\StatusCommand::class,
                 Console\SubscribeWebhooksCommand::class,
