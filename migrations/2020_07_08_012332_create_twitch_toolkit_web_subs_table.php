@@ -21,10 +21,11 @@ class CreateTwitchToolkitWebSubsTable extends Migration
             $table->string('feed_url')->unique();
             $table->string('callback_url');
             $table->string('secret')->nullable();
+            $table->boolean('accepted')->default(false);
             $table->boolean('active')->default(false);
             $table->integer('lease_seconds')->nullable();
             $table->timestamp('expires_at');
-            $table->timestamp('leased_at');
+            $table->timestamp('leased_at')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->boolean('denied')->default(false);
             $table->timestamp('denied_at')->nullable();

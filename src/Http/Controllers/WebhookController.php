@@ -3,7 +3,6 @@
 namespace GhostZero\TwitchToolkit\Http\Controllers;
 
 use GhostZero\TwitchToolkit\Events\WebhookWasCalled;
-use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
 use GhostZero\TwitchToolkit\TopicParser\Parsers\ParseException;
 use GhostZero\TwitchToolkit\TopicParser\TwitchTopicParser;
 use GhostZero\TwitchToolkit\WebSub\Subscriber;
@@ -37,13 +36,13 @@ class WebhookController extends Controller
 
         switch ($hubMode) {
             case self::HUB_MODE_SUBSCRIBE:
-                $subscriber->approve($feedUrl, $request);
+                $subscriber->approve($feedUrl, $request->get('hub_lease_seconds'), $request->toArray());
                 return response($request->get('hub_challenge'), 200, ['Content-Type' => 'text/plain']);
             case self::HUB_MODE_UNSUBSCRIBE:
                 $subscriber->unsubscribe($feedUrl, $request);
                 return response($request->get('hub_challenge'), 200, ['Content-Type' => 'text/plain']);
             case self::HUB_MODE_DENIED:
-                $subscriber->deny($feedUrl, $request);
+                $subscriber->deny($feedUrl, $request->get('hub_reason'), $request->toArray());
                 return response('', 200, ['Content-Type' => 'text/plain']);
             default:
                 return abort(500, sprintf('The given hub mode `%s` is unknown.', $hubMode));

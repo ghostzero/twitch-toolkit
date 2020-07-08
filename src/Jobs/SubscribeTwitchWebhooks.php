@@ -82,23 +82,26 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
         $requiresUserAccessToken = in_array($activity, self::AFFILIATE_AND_PARTNER_ONLY_WEBHOOKS, true);
 
+        $subscriber = new Subscriber();
+        $callbackUrl = $this->getCallbackUrl($channel->getKey(), $activity);
+        $feedUrl = Subscriber::getFeedUrl($twitch, $channel->getKey(), $activity);
+
         if ($requiresUserAccessToken) {
             // prevent subscribe of affiliate & partner-only webhooks for normal broadcasters
             if (empty($channel->broadcaster_type)) {
                 $this->skip($channel->getKey(), $activity, 'The broadcaster type is empty.');
+                $subscriber->deny($feedUrl, 'The broadcaster type is empty.');
                 return;
             } elseif (empty($channel->oauth_access_token)) {
                 $this->skip($channel->getKey(), $activity, 'The oauth access token is empty.');
+                $subscriber->deny($feedUrl, 'The oauth access token is empty.');
                 return;
             } else {
                 $twitch->setToken($channel->oauth_access_token);
             }
         }
 
-        $callbackUrl = $this->getCallbackUrl($channel->getKey(), $activity);
-        $feedUrl = Subscriber::getFeedUrl($twitch, $channel->getKey(), $activity);
-
-        (new Subscriber())->subscribe($callbackUrl, $feedUrl, $channel->getKey());
+        $subscriber->subscribe($callbackUrl, $feedUrl, $channel->getKey());
     }
 
     protected function getCallbackUrl(string $channelId, string $activity): string

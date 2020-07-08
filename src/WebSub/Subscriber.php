@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Exception;
 use GhostZero\TwitchToolkit\Enums\ActivityTopic;
 use GhostZero\TwitchToolkit\Jobs\WebSubSubscriber;
-use GhostZero\TwitchToolkit\Models\Channel;
 use GhostZero\TwitchToolkit\Models\WebSub;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -44,10 +43,10 @@ class Subscriber
         return $subscription;
     }
 
-    public function approve(string $feedUrl, Request $request): ?WebSub
+    public function approve(string $feedUrl, ?int $leaseSeconds = null, array $response = []): ?WebSub
     {
         if ($webSub = $this->firstByFeedUrl($feedUrl)) {
-            $lease = $request->get('hub_lease_seconds', $webSub->lease_seconds); // lease between 1-6 hours
+            $lease = $leaseSeconds ?? $webSub->lease_seconds; // lease between 1-6 hours
             $confirmedAt = Carbon::now();
             $expiresAt = $webSub->leased_at->clone()->addSeconds($lease);
 
@@ -57,22 +56,22 @@ class Subscriber
                 'confirmed_at' => $confirmedAt,
                 'lease_seconds' => $lease,
                 'expires_at' => $expiresAt,
-                'last_response' => $request->toArray(),
+                'last_response' => $response,
             ]);
         }
 
         return $webSub;
     }
 
-    public function deny(string $feedUrl, Request $request): ?WebSub
+    public function deny(string $feedUrl, ?string $reason = null, array $response = []): ?WebSub
     {
         if ($webSub = $this->firstByFeedUrl($feedUrl)) {
             $webSub->update([
                 'active' => false,
                 'denied' => true,
                 'denied_at' => Carbon::now(),
-                'denied_reason' => $request->get('hub_reason'),
-                'last_response' => $request->toArray(),
+                'denied_reason' => $reason,
+                'last_response' => $response,
             ]);
         }
 
