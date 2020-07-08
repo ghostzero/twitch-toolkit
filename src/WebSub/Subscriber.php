@@ -39,9 +39,7 @@ class Subscriber
                 'leased_at' => $leasedAt,
             ]);
 
-        dispatch(new WebSubSubscriber($subscription))
-            ->onConnection(config('twitch-toolkit.web-sub.connection'))
-            ->onQueue(config('twitch-toolkit.web-sub.queue'));
+        dispatch(new WebSubSubscriber($subscription));
 
         return $subscription;
     }
