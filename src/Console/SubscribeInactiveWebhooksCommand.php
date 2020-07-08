@@ -9,14 +9,14 @@ use GhostZero\TwitchToolkit\WebSub\Subscriber;
 use Illuminate\Console\Command;
 use romanzipp\Twitch\Twitch;
 
-class SubscribeWebhooksCommand extends Command
+class SubscribeInactiveWebhooksCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'twitch-toolkit:subscribe-webhooks';
+    protected $signature = 'twitch-toolkit:subscribe-inactive-webhooks';
 
     /**
      * The console command description.
@@ -35,8 +35,7 @@ class SubscribeWebhooksCommand extends Command
     {
         // renew all active webhooks that will expire soon
         WebSub::query()
-            ->where(['active' => true])
-            ->whereDate('expires_at', '>=', Carbon::now()->subMinutes(2))
+            ->where(['active' => false])
             ->inRandomOrder()->limit(50)->get()
             ->each($this->resubscribe($subscriber));
 
