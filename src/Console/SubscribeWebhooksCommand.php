@@ -33,11 +33,10 @@ class SubscribeWebhooksCommand extends Command
      */
     public function handle(Subscriber $subscriber): void
     {
-        // renew all active webhooks that will expire soon
         WebSub::query()
-            ->where(['active' => true])
-            ->whereDate('expires_at', '<=', Carbon::now())
-            ->inRandomOrder()->limit(50)->get()
+            ->whereRaw('active = 1 and expires_at <= ADDDATE(now(), INTERVAL 10 MINUTE)')
+            ->orWhereRaw('active = 0 and denied <> 1')
+            ->oldest('leased_at')->limit(300)->get()
             ->each($this->resubscribe($subscriber));
 
         $this->info(sprintf('Re-queued %s channels to subscribe to twitch webhooks.', $this->count));
