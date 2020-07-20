@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class TwitchExtGuard
 {
@@ -62,12 +63,16 @@ class TwitchExtGuard
     public function user(Request $request)
     {
 
-        if (!$request->headers->has('Authorization')) {
+        if (!($token = $request->headers->get('Authorization'))) {
+            return null;
+        }
+
+        if (!Str::startsWith($token, 'Twitch')) {
             return null;
         }
 
         try {
-            $token = explode(' ', $request->headers->get('Authorization'))[1] ?? null;
+            $token = explode(' ', $token)[1] ?? null;
 
             $fn = function () use ($token) {
                 $decoded = $this->decodeAuthorizationToken($token);
