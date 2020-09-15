@@ -24,7 +24,7 @@ class Subscriber
      */
     public function subscribe(string $callbackUrl, string $feedUrl, ?string $channelId = null): WebSub
     {
-        $lease = random_int(21600, 86400); // lease between 6-24 hours
+        $lease = random_int(777600, 864000); // lease between 9-10 days
         $leasedAt = Carbon::now();
         $expiresAt = Carbon::now()->addSeconds($lease);
 
