@@ -46,6 +46,15 @@ class WebSubSubscriber implements ShouldQueue
 
                 $this->webSub->update(['accepted' => $response->success()]);
 
+                if (!$response->success()) {
+                    Log::critical('Cannot request subscription', [
+                        'client_id' => $twitch->getClientId(),
+                        'client_secret' => $twitch->getClientSecret(),
+                        'token' => $twitch->getToken(),
+                        'error' => $response->error(),
+                    ]);
+                }
+
                 Log::info('Subscribed to a twitch webhook.', [
                     'subscription_id' => $this->webSub->getKey(),
                     'accepted' => $response->success(),
