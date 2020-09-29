@@ -31,7 +31,7 @@ class SubscriptionsParser extends TopicParser
     /**
      * Determines an estimated revenue value which the streamer receives with this subscription.
      *
-     * @param string $plan
+     * @param string|null $plan
      *
      * @return int|null
      * @todo determinate revenue by used currency; not supported by twitch at the moment

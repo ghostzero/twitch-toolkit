@@ -7,6 +7,7 @@ use GhostZero\TwitchToolkit\Events\StreamUp;
 use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -18,10 +19,7 @@ class PollStreamStatusJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * @var Collection
-     */
-    public $channels;
+    public Collection $channels;
 
     /**
      * Create a new job instance.
@@ -38,10 +36,10 @@ class PollStreamStatusJob implements ShouldQueue
      *
      * @param Twitch $twitch
      * @return void
+     * @throws LimiterTimeoutException
      */
-    public function handle(Twitch $twitch)
+    public function handle(Twitch $twitch): void
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         Redis::throttle('twitch-toolkit:throttle')->allow(500)->every(60)->then(function () use ($twitch) {
             $this->handleNow($twitch);
         }, function () {
@@ -50,7 +48,7 @@ class PollStreamStatusJob implements ShouldQueue
         });
     }
 
-    private function handleNow(Twitch $twitch)
+    private function handleNow(Twitch $twitch): void
     {
         $channelStates = $this->getChannelStates($this->channels, $twitch);
 
@@ -63,21 +61,21 @@ class PollStreamStatusJob implements ShouldQueue
         }
     }
 
-    function getChannelStates(Collection $channels, Twitch $twitch)
+    private function getChannelStates(Collection $channels, Twitch $twitch): Collection
     {
         $userIds = $channels->pluck('id')->toArray();
 
-        $result = $twitch->getStreamsByUserIds($userIds);
+        $result = $twitch->getStreams(['user_id' => $userIds]);
 
         return new Collection($result->data);
     }
 
-    private function hasStateChanged(Channel $channel, $state)
+    private function hasStateChanged(Channel $channel, $state): bool
     {
         return $channel->is_online !== ($state !== null);
     }
 
-    private function announceState(Channel $channel, $state)
+    private function announceState(Channel $channel, $state): void
     {
         // persist new state
         $channel->update([

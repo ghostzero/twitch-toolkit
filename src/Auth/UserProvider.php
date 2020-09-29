@@ -12,7 +12,7 @@ abstract class UserProvider
      * @param mixed $identifier
      * @return Authenticatable|null
      */
-    public abstract function retrieveById($identifier): ?Authenticatable;
+    abstract public function retrieveById($identifier): ?Authenticatable;
 
     /**
      * Create a user by they decoded twitch extension jwt token.

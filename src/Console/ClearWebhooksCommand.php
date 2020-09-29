@@ -36,7 +36,11 @@ class ClearWebhooksCommand extends Command
 
         foreach ($result->data as $item) {
             $this->info(sprintf("Unsubscribe: \n%s\n%s\n", $item->callback, $item->topic));
-            $response = $twitch->unsubscribeWebhook(urlencode($item->callback), $item->topic);
+            $response = $twitch->unsubscribeWebhook([], [
+                'hub.callback' => urlencode($item->callback),
+                'hub.mode' => 'unsubscribe',
+                'hub.topic' => $item->topic,
+            ]);
 
             if ($response->success()) {
                 $success++;

@@ -30,7 +30,7 @@ class PollCommand extends Command
      * @param Twitch $twitch
      * @return void
      */
-    public function handle(Twitch $twitch)
+    public function handle(Twitch $twitch): void
     {
         Channel::query()->chunk(100, function (Collection $channels) use ($twitch) {
             $this->info("Dispatch PollStreamStatusJob for {$channels->count()} channels...");

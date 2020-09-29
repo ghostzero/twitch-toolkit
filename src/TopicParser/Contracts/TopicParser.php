@@ -3,6 +3,7 @@
 namespace GhostZero\TwitchToolkit\TopicParser\Contracts;
 
 use Exception;
+use GhostZero\TwitchToolkit\TopicParser\Parsers\ParseException;
 use GhostZero\TwitchToolkit\TopicParser\TwitchParsedTopic;
 use GhostZero\TwitchToolkit\Utils\TwitchUserResolver;
 use romanzipp\Twitch\Twitch;
@@ -27,7 +28,7 @@ abstract class TopicParser
      * @return array
      * @throws Exception
      */
-    protected function response($id, $name, $revenue, $description, $data)
+    protected function response($id, $name, $revenue, $description, $data): array
     {
         $resolver = $this->resolve($id, $name);
 
@@ -47,7 +48,7 @@ abstract class TopicParser
      * @return array
      * @throws Exception
      */
-    private function resolve($id, $login)
+    private function resolve($id, $login): array
     {
         if (empty($id) && empty($login)) {
             return ['id' => null, 'name' => null];
@@ -63,6 +64,10 @@ abstract class TopicParser
         $existingType = empty($login) ? 'id' : 'login';
 
         $user = TwitchUserResolver::fetchUser($$existingType, $twitch);
+
+        if (!$user) {
+            throw ParseException::fromResolve($existingType, $$existingType);
+        }
 
         $$requiredType = $user->{$requiredType};
 

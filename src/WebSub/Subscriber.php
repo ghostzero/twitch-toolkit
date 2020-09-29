@@ -117,15 +117,15 @@ class Subscriber
      *
      * @return string
      */
-    public static function getFeedUrl(Twitch $twitch, string $channelId, $activity): string
+    public static function getFeedUrl(Twitch $twitch, string $channelId, string $activity): string
     {
         switch ($activity) {
             case ActivityTopic::FOLLOWS:
-                return $twitch->webhookTopicUserGainsFollower($channelId);
+                return $twitch->buildWebhookTopic('streams', ['user_id' => $channelId]);
             case ActivityTopic::STREAMS:
-                return $twitch->webhookTopicStreamMonitor($channelId);
+                return $twitch->buildWebhookTopic('users/follows', ['first' => 1, 'from_id' => $channelId]);
             case ActivityTopic::SUBSCRIPTIONS:
-                return $twitch::BASE_URI . 'subscriptions/events?broadcaster_id=' . $channelId . '&first=1';
+                return $twitch->buildWebhookTopic('subscriptions/events', ['first' => 1, 'broadcaster_id' => $channelId]);
             default:
                 throw new RuntimeException(sprintf('Cannot find hub.topic url by `%s` activity.', $activity));
         }

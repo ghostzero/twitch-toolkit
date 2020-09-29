@@ -11,10 +11,7 @@ class StreamDown
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var Channel
-     */
-    public $channel;
+    public Channel $channel;
 
     public function __construct(Channel $channel)
     {

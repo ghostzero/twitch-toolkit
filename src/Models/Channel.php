@@ -4,6 +4,7 @@ namespace GhostZero\TwitchToolkit\Models;
 
 use Carbon\CarbonInterface;
 use Closure;
+use DomainException;
 use GhostZero\TwitchToolkit\Exceptions\AccessTokenExpired;
 use GhostZero\TwitchToolkit\Jobs\SubscribeTwitchWebhooks;
 use GhostZero\TwitchToolkit\Utils\OauthCredentials;
@@ -162,6 +163,6 @@ class Channel extends Model
             return $carbonInterface->isPast();
         }
 
-        throw new \DomainException('Cannot determinate expiration date.');
+        throw new DomainException('Cannot determinate expiration date.');
     }
 }

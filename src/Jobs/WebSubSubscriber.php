@@ -37,12 +37,13 @@ class WebSubSubscriber implements ShouldQueue
             ->allow(self::TWITCH_WEBHOOK_MAX_LOCKS)
             ->every(self::TWITCH_WEBHOOK_DECAY)
             ->then(function () use ($twitch) {
-                $response = $twitch->subscribeWebhook(
-                    $this->webSub->callback_url,
-                    $this->webSub->feed_url,
-                    $this->webSub->lease_seconds,
-                    $this->webSub->secret
-                );
+                $response = $twitch->subscribeWebhook([], [
+                    'hub.callback' => $this->webSub->callback_url,
+                    'hub.mode' => 'subscribe',
+                    'hub.topic' => $this->webSub->feed_url,
+                    'hub.lease_seconds' => $this->webSub->lease_seconds,
+                    'hub.secret' => $this->webSub->secret,
+                ]);
 
                 $this->webSub->update(['accepted' => $response->success()]);
 

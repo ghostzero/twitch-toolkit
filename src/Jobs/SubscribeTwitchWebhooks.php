@@ -91,12 +91,14 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             if (empty($channel->broadcaster_type)) {
                 $this->skip($subscriber, $feedUrl, 'The broadcaster type is empty.');
                 return;
-            } elseif (empty($channel->oauth_access_token)) {
+            }
+
+            if (empty($channel->oauth_access_token)) {
                 $this->skip($subscriber, $feedUrl, 'The oauth access token is empty.');
                 return;
-            } else {
-                $twitch->setToken($channel->oauth_access_token);
             }
+
+            $twitch->setToken($channel->oauth_access_token);
         }
 
         $subscriber->subscribe($callbackUrl, $feedUrl, $channel->getKey());

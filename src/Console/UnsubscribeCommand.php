@@ -30,7 +30,7 @@ class UnsubscribeCommand extends Command
      */
     public function handle(Twitch $twitch)
     {
-        $response = $twitch->getUserByName($this->argument('login'));
+        $response = $twitch->getUsers(['login' => $this->argument('login')]);
 
         if ($response->success()) {
             $user = $response->shift();

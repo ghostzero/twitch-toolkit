@@ -11,13 +11,18 @@ class ParseException extends Exception
     {
         return new self(
             sprintf('[%s]: %s', class_basename($parser), $exception->getMessage()),
-            (int) $exception->getCode(),
+            (int)$exception->getCode(),
             $exception
         );
     }
 
-    public static function fromTopic($topic)
+    public static function fromTopic($topic): self
     {
         return new self(sprintf('No topic parser found for %s.', $topic));
+    }
+
+    public static function fromResolve(string $existingType, $param): self
+    {
+        return new self(sprintf('Cannot resolve user by %s with %s.', $existingType, $param));
     }
 }

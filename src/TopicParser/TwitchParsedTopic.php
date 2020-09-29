@@ -6,25 +6,10 @@ use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
 
 class TwitchParsedTopic
 {
-    /**
-     * @var TopicParser
-     */
-    private $parser;
-
-    /**
-     * @var string
-     */
-    private $messageId;
-
-    /**
-     * @var array
-     */
-    private $response;
-
-    /**
-     * @var string
-     */
-    private $topic;
+    private TopicParser $parser;
+    private string $messageId;
+    private array $response;
+    private string $topic;
 
     public function __construct(string $topic, TopicParser $parser)
     {

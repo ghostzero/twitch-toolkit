@@ -4,8 +4,8 @@ namespace GhostZero\TwitchToolkit\Enums;
 
 class ActivityTopic
 {
-    const SUBSCRIPTIONS = 'subscriptions';
-    const BITS = 'bits';
-    const FOLLOWS = 'follows';
-    const STREAMS = 'streams';
+    public const SUBSCRIPTIONS = 'subscriptions';
+    public const BITS = 'bits';
+    public const FOLLOWS = 'follows';
+    public const STREAMS = 'streams';
 }

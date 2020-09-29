@@ -6,20 +6,9 @@ use Carbon\CarbonInterface;
 
 class OauthCredentials
 {
-    /**
-     * @var string
-     */
-    private $accessToken;
-
-    /**
-     * @var string
-     */
-    private $refreshToken;
-
-    /**
-     * @var CarbonInterface
-     */
-    private $expiresAt;
+    private string $accessToken;
+    private string $refreshToken;
+    private CarbonInterface $expiresAt;
 
     public function __construct(string $accessToken, string $refreshToken, CarbonInterface $expiresAt)
     {

@@ -8,13 +8,13 @@ use romanzipp\Twitch\Twitch;
 
 class TwitchUserResolver
 {
-    public static $CACHE_KEY = 'twitch:user.%s';
+    public static string $CACHE_KEY = 'twitch:user.%s';
 
     /**
      * Fetch the user information from twitch based on the login or id.
      * This response will be cached for 12h (because of rate limits).
      *
-     * @param string $identifier can be a string or int
+     * @param string|int $identifier can be a string or int
      * @param Twitch $twitch
      * @param bool $detailedStats
      *
@@ -41,9 +41,9 @@ class TwitchUserResolver
     {
         return static function () use ($identifier, $twitch, $detailedStats) {
             if (is_numeric($identifier)) {
-                $response = $twitch->getUserById($identifier);
+                $response = $twitch->getUsers(['id' => $identifier]);
             } else {
-                $response = $twitch->getUserByName($identifier);
+                $response = $twitch->getUsers(['login' => $identifier]);
             }
 
             if (!$response->success()) {

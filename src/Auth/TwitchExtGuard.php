@@ -14,20 +14,11 @@ use Illuminate\Support\Str;
 
 class TwitchExtGuard
 {
-    /**
-     * @var string
-     */
-    public static $CACHE_KEY = 'twitch:auth.%s';
+    public static string $CACHE_KEY = 'twitch:auth.%s';
 
-    /**
-     * @var bool
-     */
-    public static $WITH_CACHE = false;
+    public static bool $WITH_CACHE = false;
 
-    /**
-     * @var UserProvider
-     */
-    protected $userProvider;
+    protected UserProvider $userProvider;
 
     /**
      * The secrets of the twitch extension guard.

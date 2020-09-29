@@ -13,7 +13,7 @@ class TwitchToolkit
      *
      * @param array $options
      */
-    public static function routes($options = [])
+    public static function routes($options = []): void
     {
         Route::middleware($options['middleware'] ?? 'api')
             ->namespace('\GhostZero\TwitchToolkit\Http\Controllers')

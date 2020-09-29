@@ -11,15 +11,8 @@ class StreamUp
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var Channel
-     */
-    public $channel;
-
-    /**
-     * @var array
-     */
-    public $metadata;
+    public Channel $channel;
+    public array $metadata;
 
     public function __construct(Channel $channel, array $metadata)
     {

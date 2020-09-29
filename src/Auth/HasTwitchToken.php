@@ -9,11 +9,7 @@ use Illuminate\Foundation\Auth\User;
  */
 trait HasTwitchToken
 {
-
-    /**
-     * @var string|null
-     */
-    protected $twitchToken;
+    protected ?string $twitchToken;
 
     public function getTwitchToken(): ?string
     {

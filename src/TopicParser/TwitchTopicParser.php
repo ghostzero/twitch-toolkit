@@ -9,10 +9,7 @@ use GhostZero\TwitchToolkit\TopicParser\Parsers;
 
 class TwitchTopicParser
 {
-    /**
-     * @var array
-     */
-    protected $parsers = [
+    protected array $parsers = [
         ActivityTopic::BITS => Parsers\BitsParser::class,
         ActivityTopic::SUBSCRIPTIONS => Parsers\SubscriptionsParser::class,
         ActivityTopic::FOLLOWS => Parsers\FollowsParser::class,
