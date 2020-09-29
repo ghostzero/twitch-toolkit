@@ -11,9 +11,9 @@
     ],
     "require": {
         "ext-json": "*",
-        "laravel/framework": "5.8.*|^7.0",
-        "orchestra/testbench": "^3.7|^5.0",
-        "phpunit/phpunit": "^7.5|^8.5",
+        "laravel/framework": "5.8.*|^7.0|^8.0",
+        "orchestra/testbench": "^3.7|^5.0|^6.0",
+        "phpunit/phpunit": "^7.5|^8.5|^9.0",
         "romanzipp/laravel-twitch": "^2.0",
         "firebase/php-jwt": "^5.2"
     },
