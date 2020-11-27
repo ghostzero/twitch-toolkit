@@ -10,8 +10,8 @@ return [
         'connection' => 'default',
         'queue' => 'default',
         'limiter' => [
-            'max_locks' => 800,
-            'decay' => 60,
+            'allow' => 800,
+            'every' => 60,
         ]
     ],
 ];
