@@ -61,7 +61,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             $this->subscribe($twitch, $this->channel, ActivityTopic::SUBSCRIPTIONS);
         } catch (Exception $exception) {
             Log::critical('Creating twitch webhook failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
-            $this->release(WebSubSubscriber::TWITCH_WEBHOOK_DECAY);
+            $this->release(config('twitch-toolkit.web-sub.limiter.every', 60));
         }
     }
 

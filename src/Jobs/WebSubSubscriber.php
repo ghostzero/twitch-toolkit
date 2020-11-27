@@ -17,9 +17,6 @@ class WebSubSubscriber implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public const TWITCH_WEBHOOK_MAX_LOCKS = 600;
-    public const TWITCH_WEBHOOK_DECAY = 60;
-
     public WebSub $webSub;
 
     public function __construct(WebSub $webSub)
@@ -34,8 +31,8 @@ class WebSubSubscriber implements ShouldQueue
     public function handle(Twitch $twitch): void
     {
         Redis::throttle('throttle:api.twitch.tv/webhooks')
-            ->allow(self::TWITCH_WEBHOOK_MAX_LOCKS)
-            ->every(self::TWITCH_WEBHOOK_DECAY)
+            ->allow(config('twitch-toolkit.web-sub.limiter.allow', 800))
+            ->every(config('twitch-toolkit.web-sub.limiter.every', 60))
             ->then(function () use ($twitch) {
                 $response = $twitch->subscribeWebhook([], [
                     'hub.callback' => $this->webSub->callback_url,
@@ -55,14 +52,9 @@ class WebSubSubscriber implements ShouldQueue
                         'error' => $response->getErrorMessage(),
                     ]);
                 }
-
-                Log::info('Subscribed to a twitch webhook.', [
-                    'subscription_id' => $this->webSub->getKey(),
-                    'accepted' => $response->success(),
-                ]);
             }, function () {
                 Log::warning("Reached webhook throttle. Release job for feed {$this->webSub->feed_url}.");
-                $this->release(self::TWITCH_WEBHOOK_DECAY);
+                $this->release(config('twitch-toolkit.web-sub.limiter.every', 60));
             });
     }
 }

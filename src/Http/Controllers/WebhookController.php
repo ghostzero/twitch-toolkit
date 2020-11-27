@@ -32,8 +32,6 @@ class WebhookController extends Controller
 
         $subscriber = new Subscriber();
 
-        Log::info(sprintf('Got Twitch webhook, with %s as hub-mode for %s.', $hubMode, $feedUrl));
-
         switch ($hubMode) {
             case self::HUB_MODE_SUBSCRIBE:
                 $subscriber->approve($feedUrl, $request->get('hub_lease_seconds'), $request->toArray());
@@ -58,8 +56,6 @@ class WebhookController extends Controller
     {
         $channelId = $request->get('channel_id');
         $activity = $request->get('activity');
-
-        Log::info(sprintf('Got webhook from twitch for channel %s. Suggestion: Got %s activity.', $channelId, $activity));
 
         $this->parseActivities($request, $channelId, $activity);
 
