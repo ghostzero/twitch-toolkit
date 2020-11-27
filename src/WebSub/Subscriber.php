@@ -123,9 +123,9 @@ class Subscriber
             case ActivityTopic::FOLLOWS:
                 return $twitch->buildWebhookTopic('streams', ['user_id' => $channelId]);
             case ActivityTopic::STREAMS:
-                return $twitch->buildWebhookTopic('users/follows', ['first' => 1, 'from_id' => $channelId]);
+                return $twitch->buildWebhookTopic('users/follows', ['first' => 1, 'to_id' => $channelId]);
             case ActivityTopic::SUBSCRIPTIONS:
-                return $twitch->buildWebhookTopic('subscriptions/events', ['first' => 1, 'broadcaster_id' => $channelId]);
+                return $twitch->buildWebhookTopic('subscriptions/events', ['broadcaster_id' => $channelId]);
             default:
                 throw new RuntimeException(sprintf('Cannot find hub.topic url by `%s` activity.', $activity));
         }
