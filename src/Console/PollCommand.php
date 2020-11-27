@@ -6,7 +6,6 @@ use GhostZero\TwitchToolkit\Jobs\PollStreamStatusJob;
 use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use romanzipp\Twitch\Twitch;
 
 class PollCommand extends Command
 {
@@ -27,12 +26,11 @@ class PollCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param Twitch $twitch
      * @return void
      */
-    public function handle(Twitch $twitch): void
+    public function handle(): void
     {
-        Channel::query()->chunk(100, function (Collection $channels) use ($twitch) {
+        Channel::query()->chunk(100, function (Collection $channels) {
             $this->info("Dispatch PollStreamStatusJob for {$channels->count()} channels...");
             PollStreamStatusJob::dispatch($channels);
         });

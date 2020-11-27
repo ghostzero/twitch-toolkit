@@ -2,12 +2,10 @@
 
 namespace GhostZero\TwitchToolkit\Console;
 
-use Carbon\Carbon;
 use Closure;
 use GhostZero\TwitchToolkit\Models\WebSub;
 use GhostZero\TwitchToolkit\WebSub\Subscriber;
 use Illuminate\Console\Command;
-use romanzipp\Twitch\Twitch;
 
 class SubscribeInactiveWebhooksCommand extends Command
 {

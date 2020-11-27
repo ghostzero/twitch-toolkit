@@ -52,7 +52,7 @@ class WebSubSubscriber implements ShouldQueue
                         'client_id' => $twitch->getClientId(),
                         'client_secret' => $twitch->getClientSecret(),
                         'token' => $twitch->getToken(),
-                        'error' => $response->error(),
+                        'error' => $response->getErrorMessage(),
                     ]);
                 }
 

@@ -28,7 +28,7 @@ class UnsubscribeCommand extends Command
      * @param Twitch $twitch
      * @return void
      */
-    public function handle(Twitch $twitch)
+    public function handle(Twitch $twitch): void
     {
         $response = $twitch->getUsers(['login' => $this->argument('login')]);
 

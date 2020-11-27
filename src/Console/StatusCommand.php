@@ -4,7 +4,6 @@ namespace GhostZero\TwitchToolkit\Console;
 
 use GhostZero\TwitchToolkit\Models\Channel;
 use Illuminate\Console\Command;
-use romanzipp\Twitch\Twitch;
 
 class StatusCommand extends Command
 {
@@ -27,7 +26,7 @@ class StatusCommand extends Command
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $count = Channel::query()->count();
         $online = Channel::query()->where(['is_online' => true])->count();

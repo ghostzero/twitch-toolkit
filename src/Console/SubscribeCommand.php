@@ -28,9 +28,9 @@ class SubscribeCommand extends Command
      * @param Twitch $twitch
      * @return void
      */
-    public function handle(Twitch $twitch)
+    public function handle(Twitch $twitch): void
     {
-        $response = $twitch->getUserByName($this->argument('login'));
+        $response = $twitch->getUsers(['login' => $this->argument('login')]);
 
         if ($response->success()) {
             $user = $response->shift();

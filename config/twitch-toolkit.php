@@ -8,7 +8,6 @@ return [
     */
     'web-sub' => [
         'connection' => 'default',
-
         'queue' => 'default',
-    ]
+    ],
 ];

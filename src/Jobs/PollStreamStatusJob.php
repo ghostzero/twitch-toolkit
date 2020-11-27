@@ -67,7 +67,7 @@ class PollStreamStatusJob implements ShouldQueue
 
         $result = $twitch->getStreams(['user_id' => $userIds]);
 
-        return new Collection($result->data);
+        return new Collection($result->data());
     }
 
     private function hasStateChanged(Channel $channel, $state): bool
