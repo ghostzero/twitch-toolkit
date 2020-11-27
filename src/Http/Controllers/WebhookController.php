@@ -79,7 +79,7 @@ class WebhookController extends Controller
                 $parsedTopic = $parser->parse($topic, $item);
                 event(new WebhookWasCalled($channelId, $topic, $parsedTopic->getResponse(), $this->getTwitchNotificationId($request)));
             } catch (ParseException $exception) {
-                Log::error('Webhook Parse error:' . $exception->getMessage());
+                Log::error("Webhook parse error for channel {$channelId} ({$topic}) error:" . $exception->getMessage());
             }
             $dispatched++; // we also want to count errored items
         }
