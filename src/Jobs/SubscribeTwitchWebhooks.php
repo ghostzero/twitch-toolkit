@@ -114,7 +114,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     private function skip(Subscriber $subscriber, string $feedUrl, string $reason): void
     {
-        Log::warning("Skipped to subscribe $feedUrl. Reason: {$reason}");
+        Log::debug("Skipped to subscribe $feedUrl. Reason: {$reason}");
         $subscriber->deny($feedUrl, 'The broadcaster type is empty.');
     }
 }

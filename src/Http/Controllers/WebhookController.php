@@ -84,15 +84,6 @@ class WebhookController extends Controller
             $dispatched++; // we also want to count errored items
         }
 
-        if ($dispatched !== 1) {
-            Log::info(sprintf(
-                'Got %s %s data from twitch webhook for channel %s. Suggestion: Stream goes offline.',
-                $dispatched,
-                $topic,
-                $channelId
-            ));
-        }
-
         // handle special event for stream down
         if ($dispatched === 0 && $topic === 'streams') {
             event(new WebhookWasCalled($channelId, $topic, [
