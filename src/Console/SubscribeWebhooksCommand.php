@@ -32,7 +32,7 @@ class SubscribeWebhooksCommand extends Command
     public function handle(Subscriber $subscriber): void
     {
         WebSub::query()
-            ->whereRaw('active = 1 and expires_at <= ADDDATE(now(), INTERVAL 10 MINUTE)')
+            ->whereRaw('active = 1 and expires_at <= ADDDATE(now(), INTERVAL 2 DAY)')
             ->orWhereRaw('active = 0 and denied <> 1')
             ->orWhereRaw('active = 1 and accepted = 0')
             ->oldest('leased_at')->limit(300)->get()
