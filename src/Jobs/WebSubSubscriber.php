@@ -9,8 +9,10 @@ use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 use romanzipp\Twitch\Twitch;
 
 class WebSubSubscriber implements ShouldQueue
@@ -51,6 +53,16 @@ class WebSubSubscriber implements ShouldQueue
                         'token' => $twitch->getToken(),
                         'error' => $response->getErrorMessage(),
                     ]);
+                }
+
+                if (!$response->success() && Str::contains($response->getErrorMessage(), ['token', 'Token'])) {
+                    Log::critical('Invalidate token in cache: ' . $response->getErrorMessage());
+                    $flushed = Cache::store(config('twitch-api.oauth_client_credentials.cache_store'))
+                        ->forget($key = config('twitch-api.oauth_client_credentials.cache_key'));
+
+                    if (!$flushed) {
+                        Log::critical("Twitch Access Token key {$key} cannot be flushed.");
+                    }
                 }
             }, function () {
                 Log::warning("Reached webhook throttle. Release job for feed {$this->webSub->feed_url}.");
