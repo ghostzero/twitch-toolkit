@@ -12,8 +12,8 @@
     "require": {
         "php": "^7.4|^8.0",
         "ext-json": "*",
-        "laravel/framework": "^5.5|^6.0|^7.0|^8.0",
-        "romanzipp/laravel-twitch": "dev-next",
+        "laravel/framework": "^5.5|^6.20.12|^7.0|^8.0",
+        "romanzipp/laravel-twitch": "^4.0",
         "firebase/php-jwt": "^5.2"
     },
     "require-dev": {
