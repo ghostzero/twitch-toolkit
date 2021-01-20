@@ -7,10 +7,11 @@ use GhostZero\TwitchToolkit\TopicParser\Contracts\TopicParser;
 
 class ParseException extends Exception
 {
-    public static function fromParser(TopicParser $parser, Exception $exception): self
+    public static function fromParser(TopicParser $parser, Exception $exception, array $rawMessage): self
     {
+        /** @noinspection JsonEncodingApiUsageInspection */
         return new self(
-            sprintf('[%s]: %s', class_basename($parser), $exception->getMessage()),
+            sprintf('[%s]: %s. Response from Twitch: %s', class_basename($parser), $exception->getMessage(), json_encode($rawMessage)),
             (int)$exception->getCode(),
             $exception
         );

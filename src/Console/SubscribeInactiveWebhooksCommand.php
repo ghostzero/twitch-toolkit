@@ -34,8 +34,9 @@ class SubscribeInactiveWebhooksCommand extends Command
         // renew all active webhooks that will expire soon
         WebSub::query()
             ->where(['active' => false])
-            ->inRandomOrder()->limit(250)->get()
-            ->each($this->resubscribe($subscriber));
+            ->inRandomOrder()
+            ->limit(floor(config('twitch-toolkit.web-sub.limiter.allow') * 0.8))
+            ->get()->each($this->resubscribe($subscriber));
 
         $this->info(sprintf('Re-queued %s channels to subscribe to twitch webhooks.', $this->count));
     }

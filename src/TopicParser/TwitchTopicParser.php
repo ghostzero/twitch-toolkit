@@ -36,7 +36,7 @@ class TwitchTopicParser
         try {
             return $parser->parse($message);
         } catch (Exception $exception) {
-            throw Parsers\ParseException::fromParser($parser, $exception);
+            throw Parsers\ParseException::fromParser($parser, $exception, $message);
         }
     }
 }

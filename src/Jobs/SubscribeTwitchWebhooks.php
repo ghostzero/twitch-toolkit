@@ -61,7 +61,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
             $this->subscribe($twitch, $this->channel, ActivityTopic::SUBSCRIPTIONS);
         } catch (Exception $exception) {
             Log::critical('Creating twitch webhook failed for ' . $this->channel->getKey() . '.', ['exception' => $exception]);
-            $this->release(WebSubSubscriber::TWITCH_WEBHOOK_DECAY);
+            $this->release(config('twitch-toolkit.web-sub.limiter.every', 60));
         }
     }
 
@@ -114,7 +114,7 @@ class SubscribeTwitchWebhooks implements ShouldQueue
 
     private function skip(Subscriber $subscriber, string $feedUrl, string $reason): void
     {
-        Log::warning("Skipped to subscribe $feedUrl. Reason: {$reason}");
+        Log::debug("Skipped to subscribe $feedUrl. Reason: {$reason}");
         $subscriber->deny($feedUrl, 'The broadcaster type is empty.');
     }
 }

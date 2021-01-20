@@ -32,8 +32,6 @@ class WebhookController extends Controller
 
         $subscriber = new Subscriber();
 
-        Log::info(sprintf('Got Twitch webhook, with %s as hub-mode for %s.', $hubMode, $feedUrl));
-
         switch ($hubMode) {
             case self::HUB_MODE_SUBSCRIBE:
                 $subscriber->approve($feedUrl, $request->get('hub_lease_seconds'), $request->toArray());
@@ -59,8 +57,6 @@ class WebhookController extends Controller
         $channelId = $request->get('channel_id');
         $activity = $request->get('activity');
 
-        Log::info(sprintf('Got webhook from twitch for channel %s. Suggestion: Got %s activity.', $channelId, $activity));
-
         $this->parseActivities($request, $channelId, $activity);
 
         return response('', 204, ['Content-Type' => 'text/plain']);
@@ -79,18 +75,13 @@ class WebhookController extends Controller
         $dispatched = 0;
 
         foreach ($request->get('data') as $item) {
-            $parsedTopic = $parser->parse($topic, $item);
-            event(new WebhookWasCalled($channelId, $topic, $parsedTopic->getResponse(), $this->getTwitchNotificationId($request)));
-            $dispatched++;
-        }
-
-        if ($dispatched !== 1) {
-            Log::info(sprintf(
-                'Got %s %s data from twitch webhook for channel %s. Suggestion: Stream goes offline.',
-                $dispatched,
-                $topic,
-                $channelId
-            ));
+            try {
+                $parsedTopic = $parser->parse($topic, $item);
+                event(new WebhookWasCalled($channelId, $topic, $parsedTopic->getResponse(), $this->getTwitchNotificationId($request)));
+            } catch (ParseException $exception) {
+                Log::error("Webhook parse error for channel {$channelId} ({$topic}) error:" . $exception->getMessage());
+            }
+            $dispatched++; // we also want to count errored items
         }
 
         // handle special event for stream down

@@ -9,5 +9,9 @@ return [
     'web-sub' => [
         'connection' => 'default',
         'queue' => 'default',
+        'limiter' => [
+            'allow' => 800,
+            'every' => 60,
+        ]
     ],
 ];

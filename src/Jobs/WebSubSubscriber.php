@@ -9,16 +9,15 @@ use Illuminate\Contracts\Redis\LimiterTimeoutException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 use romanzipp\Twitch\Twitch;
 
 class WebSubSubscriber implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public const TWITCH_WEBHOOK_MAX_LOCKS = 600;
-    public const TWITCH_WEBHOOK_DECAY = 60;
 
     public WebSub $webSub;
 
@@ -34,8 +33,8 @@ class WebSubSubscriber implements ShouldQueue
     public function handle(Twitch $twitch): void
     {
         Redis::throttle('throttle:api.twitch.tv/webhooks')
-            ->allow(self::TWITCH_WEBHOOK_MAX_LOCKS)
-            ->every(self::TWITCH_WEBHOOK_DECAY)
+            ->allow(config('twitch-toolkit.web-sub.limiter.allow', 800))
+            ->every(config('twitch-toolkit.web-sub.limiter.every', 60))
             ->then(function () use ($twitch) {
                 $response = $twitch->subscribeWebhook([], [
                     'hub.callback' => $this->webSub->callback_url,
@@ -56,13 +55,18 @@ class WebSubSubscriber implements ShouldQueue
                     ]);
                 }
 
-                Log::info('Subscribed to a twitch webhook.', [
-                    'subscription_id' => $this->webSub->getKey(),
-                    'accepted' => $response->success(),
-                ]);
+                if (!$response->success() && Str::contains($response->getErrorMessage(), ['token', 'Token'])) {
+                    Log::critical('Invalidate token in cache: ' . $response->getErrorMessage());
+                    $flushed = Cache::store(config('twitch-api.oauth_client_credentials.cache_store'))
+                        ->forget($key = config('twitch-api.oauth_client_credentials.cache_key'));
+
+                    if (!$flushed) {
+                        Log::critical("Twitch Access Token key {$key} cannot be flushed.");
+                    }
+                }
             }, function () {
                 Log::warning("Reached webhook throttle. Release job for feed {$this->webSub->feed_url}.");
-                $this->release(self::TWITCH_WEBHOOK_DECAY);
+                $this->release(config('twitch-toolkit.web-sub.limiter.every', 60));
             });
     }
 }
