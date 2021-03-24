@@ -3,13 +3,14 @@
 namespace GhostZero\TwitchToolkit\Auth;
 
 use Illuminate\Foundation\Auth\User;
+use stdClass;
 
 /**
  * @mixin User
  */
 trait HasTwitchToken
 {
-    protected ?string $twitchToken;
+    protected ?stdClass $twitchToken;
 
     public function getTwitchToken(): ?string
     {
